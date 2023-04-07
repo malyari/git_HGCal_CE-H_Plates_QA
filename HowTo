@@ -1,0 +1,8 @@
+For every cooling plate, to analyze the CMM data:
+- Empty the folders "data" and "plots".
+- Copy the input and output CMM .csv files to folder "data".
+- Run ""
+
+
+General information:
+- 
