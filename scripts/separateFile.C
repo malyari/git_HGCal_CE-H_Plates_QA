@@ -42,12 +42,13 @@ struct Reading {
 
 };
 
-// void separateFile(char const* inputFile){
-void separateFile(){
+void separateFile(char const* side){
+// void separateFile(){
     string inputDataFolder = "/Users/maral87-local/Desktop/Maral/Projects/Workflow-Presentations/HGCal/Daily/git_HGCal_CE-H_Plates_QA/data/output_CMM/";
     string dataToPlotFolder = "/Users/maral87-local/Desktop/Maral/Projects/Workflow-Presentations/HGCal/Daily/git_HGCal_CE-H_Plates_QA/data/dataToPlot/";
     string inputFile = "CE-H7B-TOP-OUT-03102023_1";
     string fileType = ".csv";
+    cout << side << endl;
 
     vector<string> type = {"flatness", "outline", "6mmPinHole", "6p5mmPinHole", "10mmPinHole", "M3Holes", "M6Holes"};
 
