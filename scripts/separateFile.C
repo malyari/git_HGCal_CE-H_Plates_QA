@@ -23,7 +23,6 @@
 #include "Riostream.h"
 #include <cstdlib>
 
-
 using namespace std;
 
 
@@ -42,15 +41,23 @@ struct Reading {
 
 };
 
-void separateFile(char const* side){
+void separateFile(char const* inputFile, char const* side){ 
 // void separateFile(){
-    string inputDataFolder = "/Users/maral87-local/Desktop/Maral/Projects/Workflow-Presentations/HGCal/Daily/git_HGCal_CE-H_Plates_QA/data/output_CMM/";
+    string inputDataFolder = "/Users/maral87-local/Desktop/Maral/Projects/Workflow-Presentations/HGCal/Daily/git_HGCal_CE-H_Plates_QA/data/dataCMM/";
     string dataToPlotFolder = "/Users/maral87-local/Desktop/Maral/Projects/Workflow-Presentations/HGCal/Daily/git_HGCal_CE-H_Plates_QA/data/dataToPlot/";
-    string inputFile = "CE-H7B-TOP-OUT-03102023_1";
     string fileType = ".csv";
-    cout << side << endl;
 
-    vector<string> type = {"flatness", "outline", "6mmPinHole", "6p5mmPinHole", "10mmPinHole", "M3Holes", "M6Holes"};
+    const char *topSide = "top";
+    vector<string> type;
+
+    int strcmp(const char *str1, const char *str2);
+    if (strcmp(side, topSide) == 0){
+        type = {"flatness", "outline", "6mmPinHole", "6p5mmPinHole", "10mmPinHole", "M3Holes", "M6Holes"};
+    }
+    else{
+        type = {"flatness"};
+    }
+    
 
     // string dir = "mkdir " + folder;
     // gSystem->Exec(dir.cstr());
