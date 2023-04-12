@@ -1,6 +1,6 @@
 // Author: Maral Alyari
 // Institution: Fermilab
-// Separating the CMM input and output files based on measured features
+// Analysing the flatness of the plates
 
 #include <iostream>
 #include <fstream>
@@ -16,6 +16,7 @@
 #include "TTree.h"
 #include "TH1D.h"
 #include "TH2D.h"
+#include "TH2F.h"
 #include "TProfile.h"
 #include "TDirectory.h"
 #include "TCanvas.h"
@@ -45,28 +46,19 @@ struct Reading {
 
 };
 
-void separateFile(char const* inputFile, char const* side){ 
+void plot_flatness(char const* inputFile, char const* side, char const* feature){ 
 // void separateFile(){
-    string inputDataFolder = "/Users/maral87-local/Desktop/Maral/Projects/Workflow-Presentations/HGCal/Daily/git_HGCal_CE-H_Plates_QA/data/dataCMM/";
     string dataToPlotFolder = "/Users/maral87-local/Desktop/Maral/Projects/Workflow-Presentations/HGCal/Daily/git_HGCal_CE-H_Plates_QA/data/dataToPlot/";
+    string plotsFolder =      "/Users/maral87-local/Desktop/Maral/Projects/Workflow-Presentations/HGCal/Daily/git_HGCal_CE-H_Plates_QA/plots/";
     string fileType = ".csv";
-
-    const char *topSide = "top";
-    vector<string> type;
-
-    int strcmp(const char *str1, const char *str2);
-    if (strcmp(side, topSide) == 0){
-        type = {"flatness", "outline", "6mmPinHole", "6p5mmPinHole", "10mmPinHole", "M3Holes", "M6Holes"};
-    }
-    else{
-        type = {"flatness"};
-    }
     
+    double thickness = 6.35;
+    string plateSide(side);
 
     // string dir = "mkdir " + folder;
     // gSystem->Exec(dir.cstr());
 
-    ifstream ifile(inputDataFolder + inputFile + fileType );
+    ifstream ifile(dataToPlotFolder + inputFile + "_" + feature + fileType );
     if (! ifile.is_open()) {cout << "Couldn't open input file" << endl;};
 
    
@@ -99,25 +91,64 @@ void separateFile(char const* inputFile, char const* side){
     }
     else
         cout<<"Could not open the ifile\n";
- 
-    cout << "Number of points measured: " << file.size() << endl; 
-    
-    string num;
-    for (int i = 0; i<type.size(); i++){
-        ofstream ofile(dataToPlotFolder + inputFile + "_" + type[i] + fileType);
-        for (int j = 1; j<file.size(); j++){
-            if ( file[j].Label.substr(0, type[i].size()) == type[i] ){
 
-                size_t pos = file[j].Label.find(type[i]); 
-                num = file[j].Label.substr( pos+type[i].size());   // num can be used for sorting the file if need be.
-                // cout << "number string: " << num << endl;
-                // cout << "file[j].Label: " << file[j].Label << endl;
-                ofile << file[j].Label << "," << file[j].X_meas << "," << file[j].Y_meas << "," << file[j].Z_meas << "," << 
-                         file[j].I     << "," << file[j].J      << "," << file[j].K      << "," << file[j].Diameter << "," << file[j].Roundness << "\n";                
-            };      
-        };  
-        ofile.close();
-    };
+    vector<double> Z_values;
+    TCanvas *c1 = new TCanvas("c1","c1",1500,1000);
+    TH2F *plot_z = new TH2F("", "Measured Z (mm)", 
+                             34,0,1700,    // X axis
+                             20,0,1000); // Y axis
+    for (int i = 0; i<file.size(); i++){
+        plot_z->Fill(file[i].Y_meas, file[i].X_meas, file[i].Z_meas - thickness);
+        Z_values.push_back(file[i].Z_meas - thickness);
+    }
+    
+    gStyle->SetPalette(kBird);
+    plot_z->SetStats(0);
+    plot_z->GetXaxis()->SetTitle("Y (mm)");
+    plot_z->GetYaxis()->SetTitle("X (mm)");
+    plot_z->SetMarkerSize(0.8);
+    plot_z->Draw("COLZ, text");
+
+    double z_min; double z_max;
+    for (double i: Z_values){
+        if (i < z_min) {z_min = i;
+        }
+        if (i > z_max) {z_max = i;
+        }
+    }
+
+
+    stringstream z_max_stream;  z_max_stream << fixed << setprecision(3) << z_max;
+    string z_max_s = z_max_stream.str();
+    
+    stringstream z_min_stream;  z_min_stream << fixed << setprecision(3) << z_min;
+    string z_min_s = z_min_stream.str();
+    
+    string max = "Max = " + z_max_s + " (mm)"; 
+    string min = "Min = " + z_min_s + " (mm)"; 
+
+    TText *tmax = new TText(1400,800,max.c_str());
+    tmax->SetTextAlign(22);
+    tmax->SetTextColor(kBlack);
+    tmax->SetTextFont(42);
+    tmax->SetTextSize(0.05);
+    tmax->SetTextAngle(0);
+    tmax->Draw();
+
+    TText *tmin = new TText(1400,720,min.c_str());
+    tmin->SetTextAlign(22);
+    tmin->SetTextColor(kBlack);
+    tmin->SetTextFont(42);
+    tmin->SetTextSize(0.05);
+    tmin->SetTextAngle(0);
+    tmin->Draw();
+    
+
+    string saveFile = plotsFolder + inputFile + "measured_z_" + plateSide + ".pdf";
+    c1->SaveAs(saveFile.c_str());
+    cout << "saved " << saveFile << endl;
+    c1->Close();
+    
     gSystem->Exit(0);
 }
     

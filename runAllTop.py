@@ -1,3 +1,7 @@
+# Author: Maral Alyari
+# Institution: Fermilab
+# Analysing all the top surface CMM measurements made on cooling plates
+
 import math
 # import numpy as np 
 # import csv
@@ -17,3 +21,8 @@ os.system("root -l 'scripts/separateFile.C(\"" + inputCMM + "\",\""+ side +"\")'
 outputCMM = "CE-H7B-TOP-OUT-03102023_1";
 os.system("root -l 'scripts/separateFile.C(\""+ outputCMM + "\",\""+ side +"\")'")
 
+# check granite table points
+
+# plot flatness
+feature = "flatness"
+os.system("root -l 'scripts/plot_flatness.C(\""+ outputCMM + "\",\""+ side +"\",\""+ feature +"\")'")
