@@ -7,13 +7,13 @@ import os
 
 # what side of the plate was measured
 side = "bottom"
+inputCMM = "allBottom_7B_config1_sorted"
+outputCMM = "CE-H7B-BOTTOM-OUT-03152023_1"
 
 # nominal values fed to the CMM 
-inputCMM = "allBottom_7B_config1_sorted"
 os.system("root -l 'scripts/separateFile.C(\"" + inputCMM + "\",\""+ side +"\")'")
 
 # CMM measured values 
-outputCMM = "CE-H7B-BOTTOM-OUT-03152023_1";
 os.system("root -l 'scripts/separateFile.C(\""+ outputCMM + "\",\""+ side +"\")'")
 
 # check granite table points

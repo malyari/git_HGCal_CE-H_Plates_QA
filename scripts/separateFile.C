@@ -45,21 +45,19 @@ struct Reading {
 
 };
 
-void separateFile(char const* inputFile, char const* side){ 
+void separateFile(char const* inputFile, char const* features){ 
 // void separateFile(){
     string inputDataFolder = "/Users/maral87-local/Desktop/Maral/Projects/Workflow-Presentations/HGCal/Daily/git_HGCal_CE-H_Plates_QA/data/dataCMM/";
     string dataToPlotFolder = "/Users/maral87-local/Desktop/Maral/Projects/Workflow-Presentations/HGCal/Daily/git_HGCal_CE-H_Plates_QA/data/dataToPlot/";
     string fileType = ".csv";
 
     vector<string> type;
+    string feature;
 
-    if (strcmp(side, "top") == 0){
-        type = {"flatness", "outline", "6mmPinHole", "6p5mmPinHole", "10mmPinHole", "M3Holes", "M6Holes"};
-    }
-    else {
-        type = {"flatness"};
-    }
-    
+    // cout << features << endl;
+    stringstream str_feat(features);
+    while(getline(str_feat, feature, ','))
+        type.push_back(feature);
 
     // string dir = "mkdir " + folder;
     // gSystem->Exec(dir.cstr());

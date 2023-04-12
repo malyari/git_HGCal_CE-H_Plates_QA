@@ -5,23 +5,36 @@
 import math
 import os
 
-# what side of the plate was measured
+# What side of the plate was measured:
 side = "top"
 
-# nominal values fed to the CMM 
-inputCMM = "allTop_7B_config1_sorted"
-os.system("root -l 'scripts/separateFile.C(\"" + inputCMM + "\",\""+ side +"\")'")
+# Thickness of the measured plate:
+thickness = "6.35"
 
-# CMM measured values 
+# File names:
+inputCMM = "allTop_7B_config1_sorted"
 outputCMM = "CE-H7B-TOP-OUT-03102023_1";
-os.system("root -l 'scripts/separateFile.C(\""+ outputCMM + "\",\""+ side +"\")'")
+
+# What features where measured:
+features = "flatness,outline,6mmPinHole,6p5mmPinHole,10mmPinHole,M3Holes,M6Holes"
+
+# Separating the file with nominal values fed to the CMM:
+os.system("root -l 'scripts/separateFile.C(\"" + inputCMM + "\",\""+ features +"\")'")
+
+# Separating the file with CMM measured values:
+os.system("root -l 'scripts/separateFile.C(\""+ outputCMM + "\",\""+ features +"\")'")
 
 # check granite table points
 
-# plot flatness
+# Plot flatness:
 feature = "flatness"
-os.system("root -l 'scripts/plot_flatness.C(\""+ outputCMM + "\",\""+ side +"\",\""+ feature +"\")'")
+os.system("root -l 'scripts/plot_flatness.C(\""+ outputCMM + "\",\""+ side +"\",\""+ feature +"\",\""+ thickness +"\")'")
 
 # For now you need to make the sorted flatness files in x and y by hand before running the next command
-# Calculate and plot the curvature
+
+# Calculate and plot the curvature:
 os.system("root -l 'scripts/cal_plot_curvature.C(\""+ outputCMM + "\",\""+ side +"\",\""+ feature +"\")'")
+
+
+
+

@@ -1,6 +1,6 @@
 // Author: Maral Alyari
 // Institution: Fermilab
-// Analysing the flatness of the plates
+// Analysing the locations of features (holes and outline)
 
 #include <iostream>
 #include <fstream>
@@ -46,13 +46,13 @@ struct Reading {
 
 };
 
-void plot_flatness(char const* inputFile, char const* side, char const* feature, char const* plateThickness){ 
+void plot_flatness(char const* inputFile, char const* side, char const* feature){ 
 // void separateFile(){
     string dataToPlotFolder = "/Users/maral87-local/Desktop/Maral/Projects/Workflow-Presentations/HGCal/Daily/git_HGCal_CE-H_Plates_QA/data/dataToPlot/";
     string plotsFolder =      "/Users/maral87-local/Desktop/Maral/Projects/Workflow-Presentations/HGCal/Daily/git_HGCal_CE-H_Plates_QA/plots/";
     string fileType = ".csv";
     
-    double thickness = stod(plateThickness);
+    double thickness = 6.35;
     string plateSide(side);
 
     // string dir = "mkdir " + folder;
@@ -168,7 +168,7 @@ void plot_flatness(char const* inputFile, char const* side, char const* feature,
     tnote->Draw();
     
 
-    string saveFile = plotsFolder + inputFile + "_measured_z" + ".pdf";
+    string saveFile = plotsFolder + inputFile + "_measured_z_" + plateSide + ".pdf";
     c1->SaveAs(saveFile.c_str());
     cout << "saved " << saveFile << endl;
     c1->Close();

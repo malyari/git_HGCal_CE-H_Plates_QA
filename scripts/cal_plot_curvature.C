@@ -197,7 +197,7 @@ void cal_plot_curvature(char const* inputFile, char const* side, char const* fea
         tnote->Draw();
 
 
-        string saveFile = plotsFolder + inputFile + "_curvature_" + plateSide + "_" + direction[nFile] + ".pdf";
+        string saveFile = plotsFolder + inputFile + "_curvature" + "_" + direction[nFile] + ".pdf";
         c1->SaveAs(saveFile.c_str());
         cout << "saved " << saveFile << endl;
         c1->Close();
