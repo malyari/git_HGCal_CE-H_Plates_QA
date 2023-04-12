@@ -1,8 +1,14 @@
 For every cooling plate, to analyze the CMM data:
 - Empty the folders "data/dataToPlot", "data/dataCMM" and "plots".
 - Copy the input and output CMM .csv files to the folder "data/dataCMM".
-- Run ""
+- In "scripts/separateFile.C" specifiy what features were measured on the top and what features were measured on the bottom side.
+- Run "runAllTop.py".
 
 
 General information:
-- 
+- flatness: need to automate sorting files to calculate curvature. For now:
+	First make a copy of the file "CE-H7B-TOP-OUT-03102023_1_flatness.csv".
+	Sort as needed in x or y
+		To sort in x: first sort based on column C. Then group by group with the same C, sort based on B. Here the y values will be the same. ("CE-H7B-TOP-OUT-03102023_1_flatness_sorted_x.csv")
+		To sort in y: first sort based on column B. Then group by group with the same B, sort based on C. Here the x values will be the same.
+		("CE-H7B-TOP-OUT-03102023_1_flatness_sorted_y.csv")

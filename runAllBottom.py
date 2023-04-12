@@ -1,19 +1,19 @@
 # Author: Maral Alyari
 # Institution: Fermilab
-# Analysing all the top surface CMM measurements made on cooling plates
+# Analysing all the bottom surface CMM measurements made on cooling plates
 
 import math
 import os
 
 # what side of the plate was measured
-side = "top"
+side = "bottom"
 
 # nominal values fed to the CMM 
-inputCMM = "allTop_7B_config1_sorted"
+inputCMM = "allBottom_7B_config1_sorted"
 os.system("root -l 'scripts/separateFile.C(\"" + inputCMM + "\",\""+ side +"\")'")
 
 # CMM measured values 
-outputCMM = "CE-H7B-TOP-OUT-03102023_1";
+outputCMM = "CE-H7B-BOTTOM-OUT-03152023_1";
 os.system("root -l 'scripts/separateFile.C(\""+ outputCMM + "\",\""+ side +"\")'")
 
 # check granite table points

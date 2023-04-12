@@ -94,9 +94,21 @@ void plot_flatness(char const* inputFile, char const* side, char const* feature)
 
     vector<double> Z_values;
     TCanvas *c1 = new TCanvas("c1","c1",1500,1000);
-    TH2F *plot_z = new TH2F("", "Measured Z (mm)", 
-                             34,0,1700,    // X axis
-                             20,0,1000); // Y axis
+    string title = "Z " + plateSide + " surface (mm)";
+    TH2F *plot_z = new TH2F("", title.c_str(),  
+                        34,0,1700,    // X axis
+                        40,-1000,1000); // Y axis
+
+    if (strcmp(side, "bottom")) {
+        // cout << "hi  top" << endl;
+        plot_z->GetYaxis()->SetRangeUser(0,1000);
+    }
+    if (strcmp(side, "top")){
+        // cout << "hi   bottom" << endl;
+        plot_z->GetYaxis()->SetRangeUser(-1000,0);   
+    }
+    
+
     for (int i = 0; i<file.size(); i++){
         plot_z->Fill(file[i].Y_meas, file[i].X_meas, file[i].Z_meas - thickness);
         Z_values.push_back(file[i].Z_meas - thickness);
@@ -111,10 +123,8 @@ void plot_flatness(char const* inputFile, char const* side, char const* feature)
 
     double z_min; double z_max;
     for (double i: Z_values){
-        if (i < z_min) {z_min = i;
-        }
-        if (i > z_max) {z_max = i;
-        }
+        if (i < z_min) {z_min = i;}
+        if (i > z_max) {z_max = i;}
     }
 
 
@@ -127,7 +137,8 @@ void plot_flatness(char const* inputFile, char const* side, char const* feature)
     string max = "Max = " + z_max_s + " (mm)"; 
     string min = "Min = " + z_min_s + " (mm)"; 
 
-    TText *tmax = new TText(1400,800,max.c_str());
+    TText *tmax = new TText(1400,900,max.c_str());
+    if (strcmp(side, "top")) {tmax->SetX(1400); tmax->SetY(-900);}
     tmax->SetTextAlign(22);
     tmax->SetTextColor(kBlack);
     tmax->SetTextFont(42);
@@ -135,16 +146,29 @@ void plot_flatness(char const* inputFile, char const* side, char const* feature)
     tmax->SetTextAngle(0);
     tmax->Draw();
 
-    TText *tmin = new TText(1400,720,min.c_str());
+    TText *tmin = new TText(1400,820,min.c_str());
+    if (strcmp(side, "top")) {tmin->SetX(1400); tmin->SetY(-820);}
     tmin->SetTextAlign(22);
     tmin->SetTextColor(kBlack);
     tmin->SetTextFont(42);
     tmin->SetTextSize(0.05);
     tmin->SetTextAngle(0);
     tmin->Draw();
+
+    stringstream thickness_stream;  thickness_stream << fixed << setprecision(3) << thickness;
+    string thickness_s = thickness_stream.str();
+    string note = "Z_plotted = Z_measured - " + thickness_s;
+    TText *tnote = new TText(320,-80,note.c_str());
+    if (strcmp(side, "top")) {tnote->SetX(320); tnote->SetY(-1080);}
+    tnote->SetTextAlign(22);
+    tnote->SetTextColor(kBlack);
+    tnote->SetTextFont(42);
+    tnote->SetTextSize(0.04);
+    tnote->SetTextAngle(0);
+    tnote->Draw();
     
 
-    string saveFile = plotsFolder + inputFile + "measured_z_" + plateSide + ".pdf";
+    string saveFile = plotsFolder + inputFile + "_measured_z_" + plateSide + ".pdf";
     c1->SaveAs(saveFile.c_str());
     cout << "saved " << saveFile << endl;
     c1->Close();

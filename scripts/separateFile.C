@@ -51,14 +51,12 @@ void separateFile(char const* inputFile, char const* side){
     string dataToPlotFolder = "/Users/maral87-local/Desktop/Maral/Projects/Workflow-Presentations/HGCal/Daily/git_HGCal_CE-H_Plates_QA/data/dataToPlot/";
     string fileType = ".csv";
 
-    const char *topSide = "top";
     vector<string> type;
 
-    int strcmp(const char *str1, const char *str2);
-    if (strcmp(side, topSide) == 0){
+    if (strcmp(side, "top") == 0){
         type = {"flatness", "outline", "6mmPinHole", "6p5mmPinHole", "10mmPinHole", "M3Holes", "M6Holes"};
     }
-    else{
+    else {
         type = {"flatness"};
     }
     
