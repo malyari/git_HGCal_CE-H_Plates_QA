@@ -11,6 +11,7 @@
 #include <vector>
 #include <time.h>
 #include <algorithm> 
+#include <iomanip>
 
 #include "TFile.h"
 #include "TTree.h"
@@ -35,18 +36,18 @@ struct Reading {
     double X_meas;
     double Y_meas;
     double Z_meas;
-    int I;
-    int J;
-    int K;
+    double I;
+    double J;
+    double K;
     double Diameter; 
     double Roundness; 
-    Reading(string label, double x_meas, double y_meas, double z_meas, int i, int j, int k, double d, double r) :
+    Reading(string label, double x_meas, double y_meas, double z_meas, double i, double j, double k, double d, double r) :
             Label(label), X_meas(x_meas), Y_meas(y_meas), Z_meas(z_meas), I(i),  J(j),  K(k),  Diameter(d), Roundness(r) {}
 
 };
 
 void separateFile(char const* inputFile, char const* features){ 
-// void separateFile(){
+    ////////// read the input file
     string inputDataFolder = "/Users/maral87-local/Desktop/Maral/Projects/Workflow-Presentations/HGCal/Daily/git_HGCal_CE-H_Plates_QA/data/dataCMM/";
     string dataToPlotFolder = "/Users/maral87-local/Desktop/Maral/Projects/Workflow-Presentations/HGCal/Daily/git_HGCal_CE-H_Plates_QA/data/dataToPlot/";
     string fileType = ".csv";
@@ -95,9 +96,11 @@ void separateFile(char const* inputFile, char const* features){
     }
     else
         cout<<"Could not open the ifile\n";
+    ifile.close();
  
     cout << "Number of points measured: " << file.size() << endl; 
     
+    ////////// save the input values in different files based on label
     string num;
     for (int i = 0; i<type.size(); i++){
         ofstream ofile(dataToPlotFolder + inputFile + "_" + type[i] + fileType);
@@ -108,6 +111,7 @@ void separateFile(char const* inputFile, char const* features){
                 num = file[j].Label.substr( pos+type[i].size());   // num can be used for sorting the file if need be.
                 // cout << "number string: " << num << endl;
                 // cout << "file[j].Label: " << file[j].Label << endl;
+                // cout  << setprecision(10) << "file[j].I: "  << file[j].I << endl;
                 ofile << file[j].Label << "," << file[j].X_meas << "," << file[j].Y_meas << "," << file[j].Z_meas << "," << 
                          file[j].I     << "," << file[j].J      << "," << file[j].K      << "," << file[j].Diameter << "," << file[j].Roundness << "\n";                
             };      

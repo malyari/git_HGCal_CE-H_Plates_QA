@@ -31,18 +31,19 @@ struct Reading {
     double X_meas;
     double Y_meas;
     double Z_meas;
-    int I;
-    int J;
-    int K;
+    double I;
+    double J;
+    double K;
     double Diameter; 
     double Roundness; 
-    Reading(string label, double x_meas,  double y_meas,  double z_meas,  int i, int j, int k, double d,    double r) :
+    Reading(string label, double x_meas,  double y_meas,  double z_meas,  double i, double j, double k, double d,    double r) :
             Label(label), X_meas(x_meas), Y_meas(y_meas), Z_meas(z_meas), I(i),  J(j),  K(k),  Diameter(d), Roundness(r) {}
 
 
 };
 
 void cal_plot_curvature(char const* inputFile, char const* side, char const* feature){
+    ////////// read the input file
     string dataToPlotFolder = "/Users/maral87-local/Desktop/Maral/Projects/Workflow-Presentations/HGCal/Daily/git_HGCal_CE-H_Plates_QA/data/dataToPlot/";
     string plotsFolder =      "/Users/maral87-local/Desktop/Maral/Projects/Workflow-Presentations/HGCal/Daily/git_HGCal_CE-H_Plates_QA/plots/";
 
@@ -90,8 +91,9 @@ void cal_plot_curvature(char const* inputFile, char const* side, char const* fea
         }
         else
             cout<<"Could not open the ifile\n";
+        ifile.close();
 
-
+        ////////// calculate the curvature
         cout << "Number of points measured: " << file.size() << endl;
         
         vector<double> X_values; vector<double> Y_values;
@@ -126,6 +128,7 @@ void cal_plot_curvature(char const* inputFile, char const* side, char const* fea
             };      
         };
 
+        ////////// plot the curvature
         TCanvas *c1 = new TCanvas("c1","c1",1500,1000);
         string title = plateSide + " surface curvature in " + direction[nFile];
         TH2F *plot_z = new TH2F("", title.c_str(), 
@@ -201,6 +204,8 @@ void cal_plot_curvature(char const* inputFile, char const* side, char const* fea
         c1->SaveAs(saveFile.c_str());
         cout << "saved " << saveFile << endl;
         c1->Close();
+
+        ////////// plot the curvature histogram 
 
     }
 

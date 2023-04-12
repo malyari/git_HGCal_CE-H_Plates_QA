@@ -33,145 +33,95 @@ using namespace std;
 
 struct Reading {
     string Label;
-    double X_meas;
-    double Y_meas;
-    double Z_meas;
-    int I;
-    int J;
-    int K;
-    double Diameter; 
-    double Roundness; 
-    Reading(string label, double x_meas, double y_meas, double z_meas, int i, int j, int k, double d, double r) :
-            Label(label), X_meas(x_meas), Y_meas(y_meas), Z_meas(z_meas), I(i),  J(j),  K(k),  Diameter(d), Roundness(r) {}
-
-};
-
-void plot_flatness(char const* inputFile, char const* side, char const* feature){ 
-// void separateFile(){
-    string dataToPlotFolder = "/Users/maral87-local/Desktop/Maral/Projects/Workflow-Presentations/HGCal/Daily/git_HGCal_CE-H_Plates_QA/data/dataToPlot/";
-    string plotsFolder =      "/Users/maral87-local/Desktop/Maral/Projects/Workflow-Presentations/HGCal/Daily/git_HGCal_CE-H_Plates_QA/plots/";
-    string fileType = ".csv";
-    
-    double thickness = 6.35;
-    string plateSide(side);
-
-    // string dir = "mkdir " + folder;
-    // gSystem->Exec(dir.cstr());
-
-    ifstream ifile(dataToPlotFolder + inputFile + "_" + feature + fileType );
-    if (! ifile.is_open()) {cout << "Couldn't open input file" << endl;};
-
-   
-    vector<Reading> file;
-    string Label;
-    double X_meas;
-    double Y_meas;
-    double Z_meas;
+    double X;
+    double Y;
+    double Z;
     double I;
     double J;
     double K;
     double Diameter; 
     double Roundness; 
-    if (ifile.is_open()) {cout << "input file is open" << endl;};
+    Reading(string label, double x, double y, double z, double i, double j, double k, double d, double r) :
+            Label(label), X(x), Y(y), Z(z), I(i),  J(j),  K(k),  Diameter(d), Roundness(r) {}
+
+};
+
+void plot_outline_holes(char const* inputFile_nom, char const* inputFile_meas, char const* side, char const* feature){ 
+    ////////// read the input files for nominal and measured
+    string dataToPlotFolder = "/Users/maral87-local/Desktop/Maral/Projects/Workflow-Presentations/HGCal/Daily/git_HGCal_CE-H_Plates_QA/data/dataToPlot/";
+    string plotsFolder =      "/Users/maral87-local/Desktop/Maral/Projects/Workflow-Presentations/HGCal/Daily/git_HGCal_CE-H_Plates_QA/plots/";
+    string fileType = ".csv";
+    
+    string plateSide(side);
+
+    // string dir = "mkdir " + folder;
+    // gSystem->Exec(dir.cstr());
+
+    ifstream ifile_nom(dataToPlotFolder + inputFile_nom + "_" + feature + fileType );
+    if (! ifile_nom.is_open()) {cout << "Couldn't open input file" << endl;};
+
+    ifstream ifile_meas(dataToPlotFolder + inputFile_meas + "_" + feature + fileType );
+    if (! ifile_meas.is_open()) {cout << "Couldn't open input file" << endl;};
+
+   
+    vector<Reading> file_nom;   vector<Reading> file_meas;
+    string Label;         
+    double X;               
+    double Y;               
+    double Z;               
+    double I;               
+    double J;               
+    double K;               
+    double Diameter;        
+    double Roundness;       
+    if (ifile_nom.is_open()) {cout << "input nominal file is open" << endl;};
+    if (ifile_meas.is_open()) {cout << "input measured file is open" << endl;};
 
     vector<string> row;
     string line, item;
  
-    if(ifile.is_open()){
-        while(getline(ifile, line)){
+    if(ifile_nom.is_open()){
+        while(getline(ifile_nom, line)){
             row.clear();
             stringstream str(line);
             while(getline(str, item, ','))
                 row.push_back(item);
-                Label = row[0]; X_meas = stod(row[1]);  Y_meas = stod(row[2]);  Z_meas = stod(row[3]);
+                Label = row[0];     X = stod(row[1]);   Y = stod(row[2]);  Z = stod(row[3]);
                 I = stod(row[4]);   J = stod(row[5]);   K = stod(row[6]);
                 Diameter = stod(row[7]);    Roundness = stod(row[8]); 
-                file.push_back(Reading(Label, X_meas,  Y_meas,  Z_meas,  I,  J,  K,  Diameter,  Roundness));
+                file_nom.push_back(Reading(Label, X,  Y,  Z,  I,  J,  K,  Diameter,  Roundness));
         }
     }
     else
-        cout<<"Could not open the ifile\n";
-
-    vector<double> Z_values;
-    TCanvas *c1 = new TCanvas("c1","c1",1500,1000);
-    string title = "Z " + plateSide + " surface (mm)";
-    TH2F *plot_z = new TH2F("", title.c_str(),  
-                        34,0,1700,    // X axis
-                        40,-1000,1000); // Y axis
-
-    if (strcmp(side, "bottom")) {
-        // cout << "hi  top" << endl;
-        plot_z->GetYaxis()->SetRangeUser(0,1000);
+        cout<<"Could not open the ifile nominal\n";
+    ifile_nom.close();
+    line.clear(); item.clear();
+    if(ifile_meas.is_open()){
+        while(getline(ifile_meas, line)){
+            row.clear();
+            stringstream str(line);
+            while(getline(str, item, ','))
+                row.push_back(item);
+                Label = row[0];     X = stod(row[1]);   Y = stod(row[2]);  Z = stod(row[3]);
+                I = stod(row[4]);   J = stod(row[5]);   K = stod(row[6]);
+                Diameter = stod(row[7]);    Roundness = stod(row[8]); 
+                file_meas.push_back(Reading(Label, X,  Y,  Z,  I,  J,  K,  Diameter,  Roundness));
+        }
     }
-    if (strcmp(side, "top")){
-        // cout << "hi   bottom" << endl;
-        plot_z->GetYaxis()->SetRangeUser(-1000,0);   
-    }
+    else
+        cout<<"Could not open the ifile nominal\n";
+    ifile_meas.close();
+
+
+    // for (int i = 0; i<file_nom.size(); i++){
+    //     cout << "file_nom[i].X: " << file_nom[i].X << " ," << "file_meas[i].X: " << file_meas[i].X << endl;
+    // }
+
+    ////////// 
+
+
     
-
-    for (int i = 0; i<file.size(); i++){
-        plot_z->Fill(file[i].Y_meas, file[i].X_meas, file[i].Z_meas - thickness);
-        Z_values.push_back(file[i].Z_meas - thickness);
-    }
     
-    gStyle->SetPalette(kBird);
-    plot_z->SetStats(0);
-    plot_z->GetXaxis()->SetTitle("Y (mm)");
-    plot_z->GetYaxis()->SetTitle("X (mm)");
-    plot_z->SetMarkerSize(0.8);
-    plot_z->Draw("COLZ, text");
-
-    double z_min; double z_max;
-    for (double i: Z_values){
-        if (i < z_min) {z_min = i;}
-        if (i > z_max) {z_max = i;}
-    }
-
-
-    stringstream z_max_stream;  z_max_stream << fixed << setprecision(3) << z_max;
-    string z_max_s = z_max_stream.str();
-    
-    stringstream z_min_stream;  z_min_stream << fixed << setprecision(3) << z_min;
-    string z_min_s = z_min_stream.str();
-    
-    string max = "Max = " + z_max_s + " (mm)"; 
-    string min = "Min = " + z_min_s + " (mm)"; 
-
-    TText *tmax = new TText(1400,900,max.c_str());
-    if (strcmp(side, "top")) {tmax->SetX(1400); tmax->SetY(-820);}
-    tmax->SetTextAlign(22);
-    tmax->SetTextColor(kBlack);
-    tmax->SetTextFont(42);
-    tmax->SetTextSize(0.05);
-    tmax->SetTextAngle(0);
-    tmax->Draw();
-
-    TText *tmin = new TText(1400,820,min.c_str());
-    if (strcmp(side, "top")) {tmin->SetX(1400); tmin->SetY(-900);}
-    tmin->SetTextAlign(22);
-    tmin->SetTextColor(kBlack);
-    tmin->SetTextFont(42);
-    tmin->SetTextSize(0.05);
-    tmin->SetTextAngle(0);
-    tmin->Draw();
-
-    stringstream thickness_stream;  thickness_stream << fixed << setprecision(3) << thickness;
-    string thickness_s = thickness_stream.str();
-    string note = "Z_plotted = Z_measured - " + thickness_s;
-    TText *tnote = new TText(320,-80,note.c_str());
-    if (strcmp(side, "top")) {tnote->SetX(320); tnote->SetY(-1080);}
-    tnote->SetTextAlign(22);
-    tnote->SetTextColor(kBlack);
-    tnote->SetTextFont(42);
-    tnote->SetTextSize(0.04);
-    tnote->SetTextAngle(0);
-    tnote->Draw();
-    
-
-    string saveFile = plotsFolder + inputFile + "_measured_z_" + plateSide + ".pdf";
-    c1->SaveAs(saveFile.c_str());
-    cout << "saved " << saveFile << endl;
-    c1->Close();
     
     gSystem->Exit(0);
 }

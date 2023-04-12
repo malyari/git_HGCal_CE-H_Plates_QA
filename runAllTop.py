@@ -28,15 +28,31 @@ os.system("root -l 'scripts/separateFile.C(\"" + inputCMM + "\",\""+ features +"
 # Separating the file with CMM measured values:
 os.system("root -l 'scripts/separateFile.C(\""+ outputCMM + "\",\""+ features +"\")'")
 
-# check granite table points
+# Sort flatness measurements for calculating the curvature. (BY HAND FOR NOW)
+# Sort outline nominal and measured files
+
+# Check granite table flatness
+
+# Check the repeatability of the 2 rounds of measurement
 
 # Plot flatness:
-os.system("root -l 'scripts/plot_flatness.C(\""+ outputCMM + "\",\""+ side +"\",\"flatness\",\""+ thickness +"\")'")
-
-# For now you need to make the sorted flatness files in x and y by hand before running the next command
+# os.system("root -l 'scripts/plot_flatness.C(\""+ outputCMM + "\",\""+ side +"\",\"flatness\",\""+ thickness +"\")'")
 
 # Calculate and plot the curvature:
-os.system("root -l 'scripts/cal_plot_curvature.C(\""+ outputCMM + "\",\""+ side +"\",\"flatness\")'")
+# os.system("root -l 'scripts/cal_plot_curvature.C(\""+ outputCMM + "\",\""+ side +"\",\"flatness\")'")
+
+# Do the fit and save it in a text file
+
+# Correct the measurements based on the fit
+
+# Plot outline
+# os.system("root -l 'scripts/plot_outline_holes.C(\""+ inputCMM + "\",\""+ outputCMM + "\",\""+ side +"\",\"outline\")'")
+
+# Plot outline arrow plots
+
+# Plot the holes
+
+# Plot the holes arrow plots
 
 
 

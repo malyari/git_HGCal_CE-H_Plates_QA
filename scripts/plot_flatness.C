@@ -36,18 +36,18 @@ struct Reading {
     double X_meas;
     double Y_meas;
     double Z_meas;
-    int I;
-    int J;
-    int K;
+    double I;
+    double J;
+    double K;
     double Diameter; 
     double Roundness; 
-    Reading(string label, double x_meas, double y_meas, double z_meas, int i, int j, int k, double d, double r) :
+    Reading(string label, double x_meas, double y_meas, double z_meas, double i, double j, double k, double d, double r) :
             Label(label), X_meas(x_meas), Y_meas(y_meas), Z_meas(z_meas), I(i),  J(j),  K(k),  Diameter(d), Roundness(r) {}
 
 };
 
 void plot_flatness(char const* inputFile, char const* side, char const* feature, char const* plateThickness){ 
-// void separateFile(){
+    ////////// read the input file
     string dataToPlotFolder = "/Users/maral87-local/Desktop/Maral/Projects/Workflow-Presentations/HGCal/Daily/git_HGCal_CE-H_Plates_QA/data/dataToPlot/";
     string plotsFolder =      "/Users/maral87-local/Desktop/Maral/Projects/Workflow-Presentations/HGCal/Daily/git_HGCal_CE-H_Plates_QA/plots/";
     string fileType = ".csv";
@@ -91,7 +91,9 @@ void plot_flatness(char const* inputFile, char const* side, char const* feature,
     }
     else
         cout<<"Could not open the ifile\n";
+    ifile.close();
 
+    ////////// plot the z values
     vector<double> Z_values;
     TCanvas *c1 = new TCanvas("c1","c1",1500,1000);
     string title = "Z " + plateSide + " surface (mm)";
@@ -172,7 +174,7 @@ void plot_flatness(char const* inputFile, char const* side, char const* feature,
     c1->SaveAs(saveFile.c_str());
     cout << "saved " << saveFile << endl;
     c1->Close();
-    
+
     gSystem->Exit(0);
 }
     
