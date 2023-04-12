@@ -138,7 +138,7 @@ void plot_flatness(char const* inputFile, char const* side, char const* feature)
     string min = "Min = " + z_min_s + " (mm)"; 
 
     TText *tmax = new TText(1400,900,max.c_str());
-    if (strcmp(side, "top")) {tmax->SetX(1400); tmax->SetY(-900);}
+    if (strcmp(side, "top")) {tmax->SetX(1400); tmax->SetY(-820);}
     tmax->SetTextAlign(22);
     tmax->SetTextColor(kBlack);
     tmax->SetTextFont(42);
@@ -147,7 +147,7 @@ void plot_flatness(char const* inputFile, char const* side, char const* feature)
     tmax->Draw();
 
     TText *tmin = new TText(1400,820,min.c_str());
-    if (strcmp(side, "top")) {tmin->SetX(1400); tmin->SetY(-820);}
+    if (strcmp(side, "top")) {tmin->SetX(1400); tmin->SetY(-900);}
     tmin->SetTextAlign(22);
     tmin->SetTextColor(kBlack);
     tmin->SetTextFont(42);

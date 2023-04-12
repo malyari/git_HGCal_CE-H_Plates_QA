@@ -23,5 +23,5 @@ feature = "flatness"
 os.system("root -l 'scripts/plot_flatness.C(\""+ outputCMM + "\",\""+ side +"\",\""+ feature +"\")'")
 
 # For now you need to make the sorted flatness files in x and y by hand before running the next command
-# Calculate the c
+# Calculate and plot the curvature
 os.system("root -l 'scripts/cal_plot_curvature.C(\""+ outputCMM + "\",\""+ side +"\",\""+ feature +"\")'")
