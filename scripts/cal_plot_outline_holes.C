@@ -46,13 +46,14 @@ struct Reading {
 
 };
 
-void plot_outline_holes(char const* inputFile_nom, char const* inputFile_meas, char const* side, char const* feature){ 
+void cal_plot_outline_holes(char const* inputFile_nom, char const* inputFile_meas, char const* side, char const* feature, char const* factor){ 
     ////////// read the input files for nominal and measured
     string dataToPlotFolder = "/Users/maral87-local/Desktop/Maral/Projects/Workflow-Presentations/HGCal/Daily/git_HGCal_CE-H_Plates_QA/data/dataToPlot/";
     string plotsFolder =      "/Users/maral87-local/Desktop/Maral/Projects/Workflow-Presentations/HGCal/Daily/git_HGCal_CE-H_Plates_QA/plots/";
     string fileType = ".csv";
     
     string plateSide(side);
+    double f = stod(factor);
 
     // string dir = "mkdir " + folder;
     // gSystem->Exec(dir.cstr());
@@ -117,7 +118,52 @@ void plot_outline_holes(char const* inputFile_nom, char const* inputFile_meas, c
     //     cout << "file_nom[i].X: " << file_nom[i].X << " ," << "file_meas[i].X: " << file_meas[i].X << endl;
     // }
 
-    ////////// 
+    
+    ////////// calculate the deltas and save points for arrow plots
+    double dX; vector<double> DX;
+    double dY; vector<double> DY;
+    double sqrtroot; vector<double> SQRTROOT;
+
+    double tanTheta; double X_plot_end; double Y_plot_end;
+
+
+
+    ofstream ofile(dataToPlotFolder + inputFile_meas + "_" + feature + "_arrow" + fileType);
+    for (int i = 0; i < file_nom.size(); i++){  
+        dX = file_meas[i].X - file_nom[i].X;
+        // ofile << "dx = " << dX << "\n";
+        DX.push_back(dX);
+
+        dY = file_meas[i].Y - file_nom[i].Y;
+        // ofile << "dy = " << dY << "\n";
+        DY.push_back(dY);
+
+        sqrtroot = sqrt(pow(dX,2)+pow(dY,2));
+        SQRTROOT.push_back(sqrtroot);
+
+        if (dX > 0){
+            tanTheta = dY/dX;
+            X_plot_end = sqrtroot*f/sqrt(1+pow(tanTheta,2)) + file_nom[i].X;
+            Y_plot_end = tanTheta*(X_plot_end - file_nom[i].X) + file_nom[i].Y;
+        }
+
+        else if (dX == 0) {
+            X_plot_end = file_meas[i].X ;
+            Y_plot_end = file_meas[i].Y;
+        } 
+
+        else if (dX < 0) {
+            tanTheta = dY/dX;
+            X_plot_end = (-1)*sqrtroot*f/sqrt(1+pow(tanTheta,2)) + file_nom[i].X;
+            Y_plot_end = tanTheta*(X_plot_end - file_nom[i].X) + file_nom[i].Y;
+        }
+
+        ofile << file_nom[i].X << "," << file_nom[i].Y << "," << X_plot_end << "," << Y_plot_end << "," << "\n";
+
+    }
+    ofile.close();
+
+    
 
 
     
