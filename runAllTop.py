@@ -4,6 +4,7 @@
 
 import math
 import os
+import subprocess
 
 ################### Need to make adjustments here for every measurement ###################
 # What side of the plate was measured:
@@ -46,10 +47,11 @@ features = "flatness,outline,6mmPinHole,6p5mmPinHole,10mmPinHole,M3Holes,M6Holes
 # Correct the measurements based on the fit
 
 # Plot outline
-os.system("root -l 'scripts/plot_outline_holes.C(\""+ inputCMM + "\",\""+ outputCMM + "\",\""+ side +"\",\"outline\",\"300\")'")
+os.system("root -l 'scripts/cal_plot_outline_holes.C(\""+ inputCMM + "\",\""+ outputCMM + "\",\""+ side +"\",\"outline\",\"1000\")'")
 
 # Plot outline arrow plots
-os.system("python -i 2Dplotter.py " + outputCMM + " outline")
+os.system("/usr/local/bin/python3 -i scripts/2Dplotter.py " + outputCMM + " outline")
+os._exit(1)
 
 # Plot the holes
 

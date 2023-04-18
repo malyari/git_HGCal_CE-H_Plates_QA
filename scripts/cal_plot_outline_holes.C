@@ -46,8 +46,21 @@ struct Reading {
 
 };
 
+struct ReadingEdges {  
+    double nEdge;
+    double X_M;
+    double Y_M;
+    double X_N;
+    double Y_N;
+    string edgeType;
+    ReadingEdges(double e, double x_m, double y_m, double x_n, double y_n, string l) :
+                 nEdge(e), X_M(x_m), Y_M(y_m), X_N(x_n), Y_N(y_n), edgeType(l)  {}
+
+};
+
 void cal_plot_outline_holes(char const* inputFile_nom, char const* inputFile_meas, char const* side, char const* feature, char const* factor){ 
     ////////// read the input files for nominal and measured
+    string inputDataFolder = "/Users/maral87-local/Desktop/Maral/Projects/Workflow-Presentations/HGCal/Daily/git_HGCal_CE-H_Plates_QA/data/dataCMM/";
     string dataToPlotFolder = "/Users/maral87-local/Desktop/Maral/Projects/Workflow-Presentations/HGCal/Daily/git_HGCal_CE-H_Plates_QA/data/dataToPlot/";
     string plotsFolder =      "/Users/maral87-local/Desktop/Maral/Projects/Workflow-Presentations/HGCal/Daily/git_HGCal_CE-H_Plates_QA/plots/";
     string fileType = ".csv";
@@ -63,6 +76,9 @@ void cal_plot_outline_holes(char const* inputFile_nom, char const* inputFile_mea
 
     ifstream ifile_meas(dataToPlotFolder + inputFile_meas + "_" + feature + fileType );
     if (! ifile_meas.is_open()) {cout << "Couldn't open input file" << endl;};
+
+    ifstream edgeFile_info(inputDataFolder + inputFile_nom + "_edgeInfo" + fileType );
+    if (! edgeFile_info.is_open()) {cout << "Couldn't open input file" << endl;};
 
    
     vector<Reading> file_nom;   vector<Reading> file_meas;
@@ -123,51 +139,179 @@ void cal_plot_outline_holes(char const* inputFile_nom, char const* inputFile_mea
     double dX; vector<double> DX;
     double dY; vector<double> DY;
     double sqrtroot; vector<double> SQRTROOT;
-
+    vector<double> X_NOM;
+    vector<double> Y_NOM;
     double tanTheta; double X_plot_end; double Y_plot_end;
-
-
-
     ofstream ofile(dataToPlotFolder + inputFile_meas + "_" + feature + "_arrow" + fileType);
-    for (int i = 0; i < file_nom.size(); i++){  
-        dX = file_meas[i].X - file_nom[i].X;
-        // ofile << "dx = " << dX << "\n";
-        DX.push_back(dX);
 
-        dY = file_meas[i].Y - file_nom[i].Y;
-        // ofile << "dy = " << dY << "\n";
-        DY.push_back(dY);
+    string type = "outline"; 
+    // correcting for perpendicularity for outline measurements
+    if (feature == type){
+        vector<ReadingEdges> edge;
+        vector<vector<ReadingEdges>> file_edge;
+        // 
+        double nEdge;
+        double fromPoint; double toPoint; double num; string edgeType;
+        line.clear(); item.clear();
+        if(edgeFile_info.is_open()){
+            while(getline(edgeFile_info, line)){
+                row.clear();
+                stringstream str(line);
+                while(getline(str, item, ','))
+                    row.push_back(item);
+                    nEdge = stod(row[0]); fromPoint = stod(row[1]); toPoint = stod(row[2]); edgeType = row[3];
+                    // cout << "nEdge: " << nEdge << " fromPoint: " << fromPoint << "  toPoint: " << toPoint << endl;
+                    for (int i = 0; i < file_nom.size(); i++){
+                        size_t pos = file_nom[i].Label.find(type);
+                        num = stod(file_nom[i].Label.substr( pos+type.size()));
+                        if ( fromPoint <= num and num <= toPoint ){
+                            // cout << "nEdge: " << nEdge << "  fromPoint <= num <= toPoint: " << fromPoint << " <= "<< num << " <= " << toPoint << endl;
+                            edge.push_back(ReadingEdges(nEdge, file_meas[i].X, file_meas[i].Y, file_nom[i].X, file_nom[i].Y, edgeType));
+                            cout << nEdge<< "   " << file_meas[i].X<< "   " << file_meas[i].Y<< "   " << file_nom[i].X << "   " << file_nom[i].Y << "   " << edgeType << endl;
+                        }
+                    }
+                    // cout << " edge.size(): " << edge.size() << endl;
+                    file_edge.push_back(edge);
+                    edge.clear();
 
-        sqrtroot = sqrt(pow(dX,2)+pow(dY,2));
-        SQRTROOT.push_back(sqrtroot);
+                
+            }
+        }  
+        // cout << "******* file_edge.size(): " << file_edge.size() << endl;
+        // cout << "******* file_edge[1].size(): " << file_edge[1].size() << endl;
+        //file_edge[how many edges][how many points are on that edge]    
 
-        if (dX > 0){
-            tanTheta = dY/dX;
-            X_plot_end = sqrtroot*f/sqrt(1+pow(tanTheta,2)) + file_nom[i].X;
-            Y_plot_end = tanTheta*(X_plot_end - file_nom[i].X) + file_nom[i].Y;
+
+        for (int i = 0 ; i < file_edge.size(); i++){
+            if (file_edge[i].size() == 2){
+                // cout << "number of points on edge " << file_edge[i][0].nEdge << " : " << file_edge[i].size() << endl;
+                
+                dX = file_edge[i][0].X_M - file_edge[i][0].X_N - (file_edge[i][1].X_N - file_edge[i][0].X_N)*(( (file_edge[i][0].X_M - file_edge[i][0].X_N)*(file_edge[i][1].X_N - file_edge[i][0].X_N) + (file_edge[i][0].Y_M - file_edge[i][0].Y_N)*(file_edge[i][1].Y_N - file_edge[i][0].Y_N) )/( pow((file_edge[i][1].X_N - file_edge[i][0].X_N),2) + pow((file_edge[i][1].Y_N - file_edge[i][0].Y_N),2) ));
+                DX.push_back(dX);
+                dY = file_edge[i][0].Y_M - file_edge[i][0].Y_N - (file_edge[i][1].Y_N - file_edge[i][0].Y_N)*(( (file_edge[i][0].X_M - file_edge[i][0].X_N)*(file_edge[i][1].X_N - file_edge[i][0].X_N) + (file_edge[i][0].Y_M - file_edge[i][0].Y_N)*(file_edge[i][1].Y_N - file_edge[i][0].Y_N) )/( pow((file_edge[i][1].X_N - file_edge[i][0].X_N),2) + pow((file_edge[i][1].Y_N - file_edge[i][0].Y_N),2) ));
+                DY.push_back(dY);
+                // cout << file_edge[i][0].X_N << "    " << file_edge[i][0].Y_N << "   " << dX << "    " << dY << endl;
+
+                sqrtroot = sqrt(pow(dX,2)+pow(dY,2));
+                SQRTROOT.push_back(sqrtroot);
+                X_NOM.push_back(file_edge[i][0].X_N);
+                Y_NOM.push_back(file_edge[i][0].Y_N);
+
+
+                dX = file_edge[i][1].X_M - file_edge[i][1].X_N - (file_edge[i][0].X_N - file_edge[i][1].X_N)*(( (file_edge[i][1].X_M - file_edge[i][1].X_N)*(file_edge[i][0].X_N - file_edge[i][1].X_N) + (file_edge[i][1].Y_M - file_edge[i][1].Y_N)*(file_edge[i][0].Y_N - file_edge[i][1].Y_N) )/( pow((file_edge[i][0].X_N - file_edge[i][1].X_N),2) + pow((file_edge[i][0].Y_N - file_edge[i][1].Y_N),2) ));
+                DX.push_back(dX);
+                dY = file_edge[i][1].Y_M - file_edge[i][1].Y_N - (file_edge[i][0].Y_N - file_edge[i][1].Y_N)*(( (file_edge[i][1].X_M - file_edge[i][1].X_N)*(file_edge[i][0].X_N - file_edge[i][1].X_N) + (file_edge[i][1].Y_M - file_edge[i][1].Y_N)*(file_edge[i][0].Y_N - file_edge[i][1].Y_N) )/( pow((file_edge[i][0].X_N - file_edge[i][1].X_N),2) + pow((file_edge[i][0].Y_N - file_edge[i][1].Y_N),2) ));
+                DY.push_back(dY);
+                // cout << file_edge[i][1].X_N << "    " << file_edge[i][1].Y_N << "   " << dX << "    " << dY << endl;
+
+                sqrtroot = sqrt(pow(dX,2)+pow(dY,2));
+                SQRTROOT.push_back(sqrtroot);
+                X_NOM.push_back(file_edge[i][1].X_N);
+                Y_NOM.push_back(file_edge[i][1].Y_N);
+
+            } 
+            else if (file_edge[i].size() > 2){
+                // cout << file_edge[i].size() << endl;
+                for (int j = 0 ; j < file_edge[i].size() - 1; j++){
+                    dX = file_edge[i][j].X_M - file_edge[i][j].X_N - (file_edge[i][j+1].X_N - file_edge[i][j].X_N)*(( (file_edge[i][j].X_M - file_edge[i][j].X_N)*(file_edge[i][j+1].X_N - file_edge[i][j].X_N) + (file_edge[i][j].Y_M - file_edge[i][j].Y_N)*(file_edge[i][j+1].Y_N - file_edge[i][j].Y_N) )/( pow((file_edge[i][j+1].X_N - file_edge[i][j].X_N),2) + pow((file_edge[i][j+1].Y_N - file_edge[i][j].Y_N),2) ));
+                    DX.push_back(dX);
+                    dY = file_edge[i][j].Y_M - file_edge[i][j].Y_N - (file_edge[i][j+1].Y_N - file_edge[i][j].Y_N)*(( (file_edge[i][j].X_M - file_edge[i][j].X_N)*(file_edge[i][j+1].X_N - file_edge[i][j].X_N) + (file_edge[i][j].Y_M - file_edge[i][j].Y_N)*(file_edge[i][j+1].Y_N - file_edge[i][j].Y_N) )/( pow((file_edge[i][j+1].X_N - file_edge[i][j].X_N),2) + pow((file_edge[i][j+1].Y_N - file_edge[i][j].Y_N),2) ));
+                    DY.push_back(dY);
+                    // cout << file_edge[i][j].X_N << "    " << file_edge[i][j].Y_N << "   " << dX << "    " << dY << endl;
+
+                    sqrtroot = sqrt(pow(dX,2)+pow(dY,2));
+                    SQRTROOT.push_back(sqrtroot);
+                    X_NOM.push_back(file_edge[i][j].X_N);
+                    Y_NOM.push_back(file_edge[i][j].Y_N);
+                    
+                };
+                int j = file_edge[i].size()-1;
+                dX = file_edge[i][j].X_M - file_edge[i][j].X_N - (file_edge[i][j-1].X_N - file_edge[i][j].X_N)*(( (file_edge[i][j].X_M - file_edge[i][j].X_N)*(file_edge[i][j-1].X_N - file_edge[i][j].X_N) + (file_edge[i][j].Y_M - file_edge[i][j].Y_N)*(file_edge[i][j-1].Y_N - file_edge[i][j].Y_N) )/( pow((file_edge[i][j-1].X_N - file_edge[i][j].X_N),2) + pow((file_edge[i][j-1].Y_N - file_edge[i][j].Y_N),2) ));
+                DX.push_back(dX);
+                dY = file_edge[i][j].Y_M - file_edge[i][j].Y_N - (file_edge[i][j-1].Y_N - file_edge[i][j].Y_N)*(( (file_edge[i][j].X_M - file_edge[i][j].X_N)*(file_edge[i][j-1].X_N - file_edge[i][j].X_N) + (file_edge[i][j].Y_M - file_edge[i][j].Y_N)*(file_edge[i][j-1].Y_N - file_edge[i][j].Y_N) )/( pow((file_edge[i][j-1].X_N - file_edge[i][j].X_N),2) + pow((file_edge[i][j-1].Y_N - file_edge[i][j].Y_N),2) ));
+                DY.push_back(dY);
+                // cout << file_edge[i][j].X_N << "    " << file_edge[i][j].Y_N << "   " << dX << "    " << dY << endl;
+
+                sqrtroot = sqrt(pow(dX,2)+pow(dY,2));
+                SQRTROOT.push_back(sqrtroot);
+                X_NOM.push_back(file_edge[i][j].X_N);
+                Y_NOM.push_back(file_edge[i][j].Y_N);
+            };
+            // cout << file_edge[i].size() << "    " << DX.size() << " " << DY.size() << " " << SQRTROOT.size() << endl;
         }
+            
+        
+        for (int i = 0; i < DX.size() ; i++){
+            if (DX[i] > 0){
+                tanTheta = DY[i]/DX[i];
+                X_plot_end = SQRTROOT[i]*f/sqrt(1+pow(tanTheta,2)) + X_NOM[i];
+                Y_plot_end = tanTheta*(X_plot_end - X_NOM[i]) + Y_NOM[i];
+                // cout << X_NOM[i] << "    " << Y_NOM[i] << "   " << DX[i] << " " << X_plot_end << " " << Y_plot_end << endl;
+            }
 
-        else if (dX == 0) {
-            X_plot_end = file_meas[i].X ;
-            Y_plot_end = file_meas[i].Y;
-        } 
+            else if (DX[i] == 0) {
+                X_plot_end = file_meas[i].X ;
+                Y_plot_end = file_meas[i].Y;
+                // cout << X_NOM[i] << "    " << Y_NOM[i] << "   " << DX[i] << " " << X_plot_end << " " << Y_plot_end << endl;
+            } 
 
-        else if (dX < 0) {
-            tanTheta = dY/dX;
-            X_plot_end = (-1)*sqrtroot*f/sqrt(1+pow(tanTheta,2)) + file_nom[i].X;
-            Y_plot_end = tanTheta*(X_plot_end - file_nom[i].X) + file_nom[i].Y;
+
+            else if (DX[i] < 0) {
+                tanTheta = DY[i]/DX[i];
+                X_plot_end = (-1)*SQRTROOT[i]*f/sqrt(1+pow(tanTheta,2)) + X_NOM[i];
+                Y_plot_end = tanTheta*(X_plot_end - X_NOM[i]) + Y_NOM[i];
+                // cout << X_NOM[i] << "    " << Y_NOM[i] << "   " << DX[i] << " " << X_plot_end << " " << Y_plot_end << endl;
+            }
+
+            ofile << X_NOM[i] << "," << Y_NOM[i] << "," << X_plot_end << "," << Y_plot_end << "\n";
+
+
         }
-
-        ofile << file_nom[i].X << "," << file_nom[i].Y << "," << X_plot_end << "," << Y_plot_end << "," << "\n";
-
+        
     }
+
+
+    // for all the holes
+    else {
+        for (int i = 0; i < file_nom.size(); i++){  
+            dX = file_meas[i].X - file_nom[i].X;
+            // ofile << "dx = " << dX << "\n";
+            DX.push_back(dX);
+
+            dY = file_meas[i].Y - file_nom[i].Y;
+            // ofile << "dy = " << dY << "\n";
+            DY.push_back(dY);
+
+            sqrtroot = sqrt(pow(dX,2)+pow(dY,2));
+            SQRTROOT.push_back(sqrtroot);
+
+            if (dX > 0){
+                tanTheta = dY/dX;
+                X_plot_end = sqrtroot*f/sqrt(1+pow(tanTheta,2)) + file_nom[i].X;
+                Y_plot_end = tanTheta*(X_plot_end - file_nom[i].X) + file_nom[i].Y;
+            }
+
+            else if (dX == 0) {
+                X_plot_end = file_meas[i].X ;
+                Y_plot_end = file_meas[i].Y;
+            } 
+
+            else if (dX < 0) {
+                tanTheta = dY/dX;
+                X_plot_end = (-1)*sqrtroot*f/sqrt(1+pow(tanTheta,2)) + file_nom[i].X;
+                Y_plot_end = tanTheta*(X_plot_end - file_nom[i].X) + file_nom[i].Y;
+            }
+
+            ofile << file_nom[i].X << "," << file_nom[i].Y << "," << X_plot_end << "," << Y_plot_end << "\n";
+
+        }
+
+    };
+    
+       
     ofile.close();
 
-    
 
-
-    
-    
     
     gSystem->Exit(0);
 }
