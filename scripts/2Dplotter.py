@@ -55,6 +55,7 @@ fig = plt.gcf()
 plt.draw()
 # print(outputName)
 fig.savefig(outputName)
+# sys.exit(0)
 
 
 
