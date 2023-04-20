@@ -24,37 +24,35 @@ features = "flatness,outline,6mmPinHole,6p5mmPinHole,10mmPinHole,M3Holes,M6Holes
 
 
 # Separating the file with nominal values fed to the CMM:
-# os.system("root -l 'scripts/separateFile.C(\"" + inputCMM + "\",\""+ features +"\")'")
+os.system("root -l 'scripts/separateFile.C(\"" + inputCMM + "\",\""+ features +"\")'")
 
 # Separating the file with CMM measured values:
-# os.system("root -l 'scripts/separateFile.C(\""+ outputCMM + "\",\""+ features +"\")'")
+os.system("root -l 'scripts/separateFile.C(\""+ outputCMM + "\",\""+ features +"\")'")
 
 # Sort flatness measurements for calculating the curvature. 
 os.system("/usr/local/bin/python3 -i scripts/sort_flatness.py " + outputCMM + " flatness x")
-# os._exit(1)
 
 os.system("/usr/local/bin/python3 -i scripts/sort_flatness.py " + outputCMM + " flatness y")
-os._exit(1)
 
 # Check granite table flatness
 
 # Check the repeatability of the 2 rounds of measurement
 
 # Plot flatness:
-# os.system("root -l 'scripts/plot_flatness.C(\""+ outputCMM + "\",\""+ side +"\",\"flatness\",\""+ thickness +"\")'")
+os.system("root -l 'scripts/plot_flatness.C(\""+ outputCMM + "\",\""+ side +"\",\"flatness\",\""+ thickness +"\")'")
 
 # Calculate and plot the curvature:
-# os.system("root -l 'scripts/cal_plot_curvature.C(\""+ outputCMM + "\",\""+ side +"\",\"flatness\")'")
+os.system("root -l 'scripts/cal_plot_curvature.C(\""+ outputCMM + "\",\""+ side +"\",\"flatness\")'")
 
 # Do the fit and save it in a text file
 
 # Correct the measurements based on the fit
 
 # Plot outline
-# os.system("root -l 'scripts/cal_plot_outline_holes.C(\""+ inputCMM + "\",\""+ outputCMM + "\",\""+ side +"\",\"outline\",\"1000\")'")
+os.system("root -l 'scripts/cal_plot_outline_holes.C(\""+ inputCMM + "\",\""+ outputCMM + "\",\""+ side +"\",\"outline\",\"1000\")'")
 
 # Plot outline arrow plots
-# os.system("/usr/local/bin/python3 -i scripts/2Dplotter.py " + outputCMM + " outline")
+os.system("/usr/local/bin/python3 -i scripts/2Dplotter.py " + outputCMM + " outline")
 # os._exit(1)
 
 # Plot the holes

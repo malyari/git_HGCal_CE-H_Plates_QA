@@ -2,7 +2,7 @@
 # Institution: Fermilab
 # Sorting the flatness data before calculating the curvature
 
-
+import os
 import csv
 import sys
 import pandas as pd
@@ -59,7 +59,7 @@ with open(outputName, 'w') as outFile:
       df2.to_csv(outFile, index=False, header=False)
 
 outFile.close()
-
+os._exit(0)
 
 
 

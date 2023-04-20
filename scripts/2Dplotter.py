@@ -6,6 +6,7 @@
 import matplotlib.pyplot as plt
 import csv
 import sys
+import os
 
 # def 2Dplotter(inputFile_meas, feature):
 
@@ -60,6 +61,7 @@ fig = plt.gcf()
 plt.draw()
 # print(outputName)
 fig.savefig(outputName)
+os._exit(0)
 # sys.exit(0)
 
 
