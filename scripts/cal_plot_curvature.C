@@ -1,3 +1,8 @@
+// Author: Maral Alyari
+// Institution: Fermilab
+// Plotting the curvature on the plate surface in x and y directions
+
+
 #include <iostream>
 #include <fstream>
 #include <sstream>

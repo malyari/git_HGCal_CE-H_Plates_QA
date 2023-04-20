@@ -1,3 +1,8 @@
+# Author: Maral Alyari
+# Institution: Fermilab
+# Plotting 2D arrow plots to show the feature displacements 
+
+
 import matplotlib.pyplot as plt
 import csv
 import sys

@@ -29,8 +29,12 @@ features = "flatness,outline,6mmPinHole,6p5mmPinHole,10mmPinHole,M3Holes,M6Holes
 # Separating the file with CMM measured values:
 # os.system("root -l 'scripts/separateFile.C(\""+ outputCMM + "\",\""+ features +"\")'")
 
-# Sort flatness measurements for calculating the curvature. (BY HAND FOR NOW)
-# Sort outline nominal and measured files
+# Sort flatness measurements for calculating the curvature. 
+os.system("/usr/local/bin/python3 -i scripts/sort_flatness.py " + outputCMM + " flatness x")
+# os._exit(1)
+
+os.system("/usr/local/bin/python3 -i scripts/sort_flatness.py " + outputCMM + " flatness y")
+os._exit(1)
 
 # Check granite table flatness
 
@@ -47,15 +51,19 @@ features = "flatness,outline,6mmPinHole,6p5mmPinHole,10mmPinHole,M3Holes,M6Holes
 # Correct the measurements based on the fit
 
 # Plot outline
-os.system("root -l 'scripts/cal_plot_outline_holes.C(\""+ inputCMM + "\",\""+ outputCMM + "\",\""+ side +"\",\"outline\",\"1000\")'")
+# os.system("root -l 'scripts/cal_plot_outline_holes.C(\""+ inputCMM + "\",\""+ outputCMM + "\",\""+ side +"\",\"outline\",\"1000\")'")
 
 # Plot outline arrow plots
-os.system("/usr/local/bin/python3 -i scripts/2Dplotter.py " + outputCMM + " outline")
-os._exit(1)
+# os.system("/usr/local/bin/python3 -i scripts/2Dplotter.py " + outputCMM + " outline")
+# os._exit(1)
 
 # Plot the holes
+# os.system("root -l 'scripts/cal_plot_outline_holes.C(\""+ inputCMM + "\",\""+ outputCMM + "\",\""+ side +"\",\"hole\",\"1000\")'")
 
 # Plot the holes arrow plots
+# os.system("/usr/local/bin/python3 -i scripts/2Dplotter.py " + outputCMM + "hole")
+# os._exit(1)
+
 
 
 
