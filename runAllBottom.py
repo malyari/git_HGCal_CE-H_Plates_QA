@@ -28,12 +28,24 @@ os.system("root -l 'scripts/separateFile.C(\"" + inputCMM + "\",\""+ features +"
 # Separating the file with CMM measured values:
 os.system("root -l 'scripts/separateFile.C(\""+ outputCMM + "\",\""+ features +"\")'")
 
+# Sort flatness measurements for calculating the curvature. 
+os.system("/usr/local/bin/python3 -i scripts/sort_flatness.py " + outputCMM + " flatness x")
+os.system("/usr/local/bin/python3 -i scripts/sort_flatness.py " + outputCMM + " flatness y")
+
 # check granite table points
+
+# Check the repeatability of the 2 rounds of measurement
 
 # Plot flatness:
 os.system("root -l 'scripts/plot_flatness.C(\""+ outputCMM + "\",\""+ side +"\",\"flatness\",\""+ thickness +"\")'")
 
-# For now you need to make the sorted flatness files in x and y by hand before running the next command
-
 # Calculate and plot the curvature:
 os.system("root -l 'scripts/cal_plot_curvature.C(\""+ outputCMM + "\",\""+ side +"\",\"flatness\")'")
+
+
+
+
+
+
+
+

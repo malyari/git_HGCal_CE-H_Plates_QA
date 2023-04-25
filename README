@@ -1,0 +1,19 @@
+Recipe:
+For every cooling plate, to analyze the CMM data:
+- Empty the folders "data/dataToPlot", "data/dataCMM" and "plots".
+- Copy the input and output CMM .csv files and the edgeInfo file to the folder "data/dataCMM".
+- In "runAllTop.py" and "runAllBottom.py" scripts specifiy the input and output file names, plate thickness and what features were measured on the top and what features were measured on the bottom side.
+- Run "runAllTop.py".
+- Run "runAllBottom.py"
+
+
+General information:
+- separateFile.C: Separates the input and output files based on measured features.
+- plot_flatness.C: Plots the flatness plots.
+- sort_flatness.py: Sorts the flatness data in x and y so that curvature can be calcualted.
+- cal_plot_curvature.C: calculates the curvature and plots the curvature plots.
+- cal_plot_outline_holes.C: For the outline it corrects the data for the imperfections of the CMM tip approaching the edge of the plate. Basically for the CMM tip not being completely perpendicular to the edge of the plate. For the outline and the holes, it plots deviation plots and prepares a file for the 2D arrow plotter.
+- 2Dplotter.py: plots the 2D arrow plots to show the deviations from nominal for the outline and the holes.
+- runAllTop.py: Runs all the scripts to analyze the top surface data.
+- runAllBottom.py: Runs all the scripts to analyze the bottom surface data.
+

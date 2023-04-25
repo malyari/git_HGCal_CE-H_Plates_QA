@@ -31,7 +31,6 @@ os.system("root -l 'scripts/separateFile.C(\""+ outputCMM + "\",\""+ features +"
 
 # Sort flatness measurements for calculating the curvature. 
 os.system("/usr/local/bin/python3 -i scripts/sort_flatness.py " + outputCMM + " flatness x")
-
 os.system("/usr/local/bin/python3 -i scripts/sort_flatness.py " + outputCMM + " flatness y")
 
 # Check granite table flatness
