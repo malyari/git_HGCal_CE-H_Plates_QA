@@ -34,7 +34,6 @@ os.system("/usr/local/bin/python3 -i scripts/sort_flatness.py " + outputCMM + " 
 
 # check granite table points
 
-# Check the repeatability of the 2 rounds of measurement
 
 # Plot flatness:
 os.system("root -l 'scripts/plot_flatness.C(\""+ outputCMM + "\",\""+ side +"\",\"flatness\",\""+ thickness +"\")'")

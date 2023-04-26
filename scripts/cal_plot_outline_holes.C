@@ -58,7 +58,7 @@ struct ReadingEdges {
 
 };
 
-void cal_plot_outline_holes(char const* inputFile_nom, char const* inputFile_meas, char const* side, char const* feature, char const* factor){ 
+void cal_plot_outline_holes(char const* inputFile_nom, char const* inputFile_meas, char const* side, char const* feature, char const* factor, char const* fitOption){ 
     ////////// read the input files for nominal and measured
     string inputDataFolder = "/Users/maral87-local/Desktop/Maral/Projects/Workflow-Presentations/HGCal/Daily/git_HGCal_CE-H_Plates_QA/data/dataCMM/";
     string dataToPlotFolder = "/Users/maral87-local/Desktop/Maral/Projects/Workflow-Presentations/HGCal/Daily/git_HGCal_CE-H_Plates_QA/data/dataToPlot/";
@@ -71,12 +71,30 @@ void cal_plot_outline_holes(char const* inputFile_nom, char const* inputFile_mea
     // string dir = "mkdir " + folder;
     // gSystem->Exec(dir.cstr());
 
-    ifstream ifile_nom(dataToPlotFolder + inputFile_nom + "_" + feature + fileType );
+    string postFit = "postFit"; 
+    string preFit = "preFit"; 
+
+    string file_nom_name;
+    string file_meas_name;
+    file_nom_name = dataToPlotFolder + inputFile_nom + "_" + feature + fileType;
+
+    if (fitOption == postFit){
+        file_meas_name = dataToPlotFolder + inputFile_meas + "_" + feature + "_" + fitOption + fileType;
+    }
+    if (fitOption == preFit){
+        file_meas_name = dataToPlotFolder + inputFile_meas + "_" + feature + fileType;
+    }
+
+    cout << file_nom_name << endl;
+    cout << file_meas_name << endl;
+
+    
+    ifstream ifile_nom(file_nom_name );
     if (! ifile_nom.is_open()) {cout << "Couldn't open input file" << endl;};
 
-    ifstream ifile_meas(dataToPlotFolder + inputFile_meas + "_" + feature + fileType );
+    ifstream ifile_meas(file_meas_name );
     if (! ifile_meas.is_open()) {cout << "Couldn't open input file" << endl;};
-
+    
     ifstream edgeFile_info(inputDataFolder + inputFile_nom + "_edgeInfo" + fileType );
     if (! edgeFile_info.is_open()) {cout << "Couldn't open input file" << endl;};
 
@@ -142,7 +160,7 @@ void cal_plot_outline_holes(char const* inputFile_nom, char const* inputFile_mea
     vector<double> X_NOM;   vector<double> X_MEAS;
     vector<double> Y_NOM;   vector<double> Y_MEAS;
     double tanTheta; double X_plot_end; double Y_plot_end;
-    ofstream ofile(dataToPlotFolder + inputFile_meas + "_" + feature + "_arrow" + fileType);
+    ofstream ofile(dataToPlotFolder + inputFile_meas + "_" + feature + "_arrow" + "_" + fitOption + fileType);
 
     string type = "outline"; 
     // correcting for perpendicularity for outline measurements

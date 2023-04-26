@@ -12,6 +12,7 @@ import os
 
 inputFile_meas = sys.argv[1]
 feature = sys.argv[2]
+fitOption = sys.argv[3]
 # reading the csv file
 dataToPlotFolder = "/Users/maral87-local/Desktop/Maral/Projects/Workflow-Presentations/HGCal/Daily/git_HGCal_CE-H_Plates_QA/data/dataToPlot/"
 plotsFolder =      "/Users/maral87-local/Desktop/Maral/Projects/Workflow-Presentations/HGCal/Daily/git_HGCal_CE-H_Plates_QA/plots/"
@@ -19,8 +20,8 @@ fileType = ".csv"
 
 plotFileType = ".pdf"
 
-inputName = dataToPlotFolder + inputFile_meas + "_" + feature + "_arrow" + fileType
-outputName = plotsFolder + inputFile_meas + "_" + feature + "_arrow" + plotFileType
+inputName = dataToPlotFolder + inputFile_meas + "_" + feature + "_arrow" + "_" + fitOption + fileType
+outputName = plotsFolder + inputFile_meas + "_" + feature + "_arrow" + "_" + fitOption + plotFileType
   
 X_nom = []
 Y_nom = []
