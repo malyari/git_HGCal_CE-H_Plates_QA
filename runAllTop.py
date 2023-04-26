@@ -43,7 +43,9 @@ features = "flatness,outline,6mmPinHole,6p5mmPinHole,10mmPinHole,M3Holes,M6Holes
 # Calculate and plot the curvature:
 # os.system("root -l 'scripts/cal_plot_curvature.C(\""+ outputCMM + "\",\""+ side +"\",\"flatness\")'")
 
-# Do the fit and save it in a text file
+# Combine the files that will be used for the fit
+
+# Do the fit and save theta, x_t and y_t in a text file
 os.system("root -l 'scripts/NumericalMinimization.C(\"" + inputCMM + "\",\""+ outputCMM +"\")'")
 
 # Correct the measurements based on the fit

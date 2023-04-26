@@ -51,19 +51,16 @@ struct Reading {
 };
 
 
-double Distance(const double *xxx){
+double Distance(char const* inputFile_nom, char const* inputFile_meas, const double *xxx){
 
     string dataToPlotFolder = "/Users/maral87-local/Desktop/Maral/Projects/Workflow-Presentations/HGCal/Daily/git_HGCal_CE-H_Plates_QA/data/dataToPlot/";
     string fileType = ".csv";
 
-    string inputFile_nom = "allTop_7B_config1_sorted_outline";
-    string inputFile_meas= "CE-H7B-TOP-OUT-03102023_1_outline";
 
-
-    ifstream imfile(dataToPlotFolder + inputFile_meas + fileType );
+    ifstream imfile(dataToPlotFolder + inputFile_meas+"_outline" + fileType );
     if (! imfile.is_open()) {cout << "Couldn't open input file" << endl;};
 
-    ifstream infile(dataToPlotFolder + inputFile_nom + fileType);
+    ifstream infile(dataToPlotFolder + inputFile_nom +"_outline"+ fileType);
     if (! infile.is_open()) {cout << "Couldn't open input file" << endl;};
 
     vector<Reading> nfile;
@@ -171,7 +168,8 @@ int NumericalMinimization(char const* inputFile_nom, char const* inputFile_meas,
 
     // create funciton wrapper for minmizer
     // a IMultiGenFunction type 
-    ROOT::Math::Functor f(&Distance,3); 
+    // ROOT::Math::Functor f(&Distance,3); 
+    ROOT::Math::Functor f([&](const double *xxx){return Distance(inputFile_nom,inputFile_meas,xxx);},3); 
 
     double step[3] = {0.001,0.001,0.001};
 
