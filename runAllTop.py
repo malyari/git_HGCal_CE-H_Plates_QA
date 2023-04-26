@@ -24,24 +24,24 @@ features = "flatness,outline,6mmPinHole,6p5mmPinHole,10mmPinHole,M3Holes,M6Holes
 
 
 # Separating the file with nominal values fed to the CMM:
-os.system("root -l 'scripts/separateFile.C(\"" + inputCMM + "\",\""+ features +"\")'")
+# os.system("root -l 'scripts/separateFile.C(\"" + inputCMM + "\",\""+ features +"\")'")
 
 # Separating the file with CMM measured values:
-os.system("root -l 'scripts/separateFile.C(\""+ outputCMM + "\",\""+ features +"\")'")
+# os.system("root -l 'scripts/separateFile.C(\""+ outputCMM + "\",\""+ features +"\")'")
 
 # Sort flatness measurements for calculating the curvature. 
-os.system("/usr/local/bin/python3 -i scripts/sort_flatness.py " + outputCMM + " flatness x")
-os.system("/usr/local/bin/python3 -i scripts/sort_flatness.py " + outputCMM + " flatness y")
+# os.system("/usr/local/bin/python3 -i scripts/sort_flatness.py " + outputCMM + " flatness x")
+# os.system("/usr/local/bin/python3 -i scripts/sort_flatness.py " + outputCMM + " flatness y")
 
 # Check granite table flatness
 
 # Check the repeatability of the 2 rounds of measurement
 
 # Plot flatness:
-os.system("root -l 'scripts/plot_flatness.C(\""+ outputCMM + "\",\""+ side +"\",\"flatness\",\""+ thickness +"\")'")
+# os.system("root -l 'scripts/plot_flatness.C(\""+ outputCMM + "\",\""+ side +"\",\"flatness\",\""+ thickness +"\")'")
 
 # Calculate and plot the curvature:
-os.system("root -l 'scripts/cal_plot_curvature.C(\""+ outputCMM + "\",\""+ side +"\",\"flatness\")'")
+# os.system("root -l 'scripts/cal_plot_curvature.C(\""+ outputCMM + "\",\""+ side +"\",\"flatness\")'")
 
 # Do the fit and save it in a text file
 
@@ -52,14 +52,18 @@ os.system("root -l 'scripts/cal_plot_outline_holes.C(\""+ inputCMM + "\",\""+ ou
 
 # Plot outline arrow plots
 os.system("/usr/local/bin/python3 -i scripts/2Dplotter.py " + outputCMM + " outline")
-# os._exit(1)
 
-# Plot the holes
-# os.system("root -l 'scripts/cal_plot_outline_holes.C(\""+ inputCMM + "\",\""+ outputCMM + "\",\""+ side +"\",\"hole\",\"1000\")'")
+allFeatures = features.split(',')
+for i in range(len(allFeatures)):
+    if "Hole" in allFeatures[i]:
+        # print(allFeatures[i])
 
-# Plot the holes arrow plots
-# os.system("/usr/local/bin/python3 -i scripts/2Dplotter.py " + outputCMM + "hole")
-# os._exit(1)
+        # Plot the holes
+        os.system("root -l 'scripts/cal_plot_outline_holes.C(\""+ inputCMM + "\",\""+ outputCMM + "\",\""+ side +"\",\""+ allFeatures[i] +"\",\"1000\")'")
+
+        # Plot the holes arrow plots
+        os.system("/usr/local/bin/python3 -i scripts/2Dplotter.py " + outputCMM + " "+allFeatures[i])
+os._exit(1)
 
 
 
