@@ -57,10 +57,10 @@ double Distance(char const* inputFile_nom, char const* inputFile_meas, const dou
     string fileType = ".csv";
 
 
-    ifstream imfile(dataToPlotFolder + inputFile_meas+"_outline" + fileType );
+    ifstream imfile(dataToPlotFolder + inputFile_meas + "_forFit" +  fileType );
     if (! imfile.is_open()) {cout << "Couldn't open input file" << endl;};
 
-    ifstream infile(dataToPlotFolder + inputFile_nom +"_outline"+ fileType);
+    ifstream infile(dataToPlotFolder + inputFile_nom + "_forFit" + fileType);
     if (! infile.is_open()) {cout << "Couldn't open input file" << endl;};
 
     vector<Reading> nfile;
@@ -214,8 +214,10 @@ int NumericalMinimization(char const* inputFile_nom, char const* inputFile_meas,
     ofile << "x_t" << "," << xs[1] << "\n";
     ofile << "y_t" << "," << xs[2] << "\n";
     ofile.close();
+    gSystem->Exit(0);
 
     return 0;
+    
 }
 
 

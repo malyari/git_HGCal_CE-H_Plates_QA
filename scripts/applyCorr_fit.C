@@ -7,6 +7,7 @@
 #include <vector>
 #include <time.h>
 #include <algorithm> 
+#include <iomanip>
 
 #include "TFile.h"
 #include "TTree.h"
@@ -23,7 +24,6 @@
 #include "Riostream.h"
 #include <cstdlib>
 
-
 using namespace std;
 
 
@@ -37,175 +37,113 @@ struct Reading {
     double K;
     double Diameter; 
     double Roundness; 
-    Reading(string label, double x_meas,  double y_meas,  double z_meas,  int i, int j, int k, double d,    double r) :
+    Reading(string label, double x_meas, double y_meas, double z_meas, double i, double j, double k, double d, double r) :
             Label(label), X_meas(x_meas), Y_meas(y_meas), Z_meas(z_meas), I(i),  J(j),  K(k),  Diameter(d), Roundness(r) {}
-
 
 };
 
-void applyCorr_fit(){
-    string measuredDataFolder = "data/dataToPlot/"; //change for each round of measurements
-    string nominalDataFolder = "data/nominals/";
-    string outputDataFolder = "data/dataToPlot/dataWithDeltas_postfit/round1/";   //change for each round of measurements
-    string plots = "plots/postfit/"; //change for each round of measurements
-    string dataRound = "postfit_round1_"; //change for each round of measurements
+struct fitReading{
+    string fitLabel;
+    double fitValue;
+    fitReading(string l, double f) : fitLabel(l), fitValue(f) {}
+};
 
-    vector<string> measuredFile = {"F10161394-TOPBUTPOCKETS-02-MAR-22_Run1_outline",   // change for each round of measurements
-                                   // "F10161394-TOPBUTPOCKETS-02-MAR-22_Run1_pinhole",
-                                   // "F10161394-TOPBUTPOCKETS-02-MAR-22_Run1_M4",
-                                   // "F10161394-TOPBUTPOCKETS-02-MAR-22_Run1_M3",
-                                   // "F10161394-TOPBUTPOCKETS-02-MAR-22_Run1_M1p6",
-                                   // "F10161394-TOP-OUT-14Dec21-Run1_topPocket_outline"
-                               };
+void applyCorr_fit(char const* inputFile, char const* features){ 
+    ////////// read the input file
+    string dataToPlotFolder = "/Users/maral87-local/Desktop/Maral/Projects/Workflow-Presentations/HGCal/Daily/git_HGCal_CE-H_Plates_QA/data/dataToPlot/";
     string fileType = ".csv";
-    string outputFile = "_withDeltas";
 
-    string recordFile = "recordFile.txt";
+    vector<string> type;
+    string feature;
 
-    vector<string> nominalFile = {"outline_CMM",
-                                  // "pinHoles_CMM",
-                                  // "M4Holes_CMM",
-                                  // "M3Holes_CMM",
-                                  // "M1p6Holes_CMM",
-                                  // "pockets_top_CMM_outline"
-                              };
+    vector<string> row;
+    string line, item;
 
-    vector<string> plotsFolders = {"outline",
-                                   // "pinHoles",
-                                   // "M4Holes",
-                                   // "M3Holes",
-                                   // "M1p6Holes",
-                                   // "pockets_top"
-                               };
+    vector<fitReading> fitFileValues;
+    string fitLabel;
+    double fitValue;
+              
 
-    // string dir = "mkdir " + folder;
-    // gSystem->Exec(dir.c_str());
+    // cout << features << endl;
+    stringstream str_feat(features);
+    while(getline(str_feat, feature, ','))
+        type.push_back(feature);
 
-    
-
-    
-
-    ofstream ofile( plots + dataRound + recordFile);
-
-    
-    for (int j = 0; j<measuredFile.size(); j++){
-        vector<Reading> mfile;
-        vector<Reading> nfile;
-        string Label;
-        double X_meas;
-        double Y_meas;
-        double Z_meas;
-        double I;
-        double J;
-        double K;
-        double Diameter; 
-        double Roundness; 
-
-        double dX; vector<double> DX;
-        double dY; vector<double> DY;
-        double sqrtroot; vector<double> SQRTROOT;
-
-        double tanTheta; double X_plot_end; double Y_plot_end;
-
-        ifstream imfile(measuredDataFolder + measuredFile[j] + fileType );
-        if (! imfile.is_open()) {cout << "Couldn't open input file" << endl;};
-
-        ifstream infile(nominalDataFolder + nominalFile[j] + fileType );
-        if (! infile.is_open()) {cout << "Couldn't open input file" << endl;};
-
-
-        while (imfile >> Label >> X_meas >> Y_meas >> Z_meas >> I >> J >> K >> Diameter >> Roundness) {
-            mfile.push_back(Reading(Label, X_meas, Y_meas, Z_meas, I, J, K, Diameter, Roundness));
+    ifstream fitFile(dataToPlotFolder + "fitValues" + fileType );
+      
+    if(fitFile.is_open()){
+        while(getline(fitFile, line)){
+            row.clear();
+            stringstream str(line);
+            while(getline(str, item, ','))
+                row.push_back(item);
+                fitLabel = row[0]; fitValue = stod(row[1]);  
+                fitFileValues.push_back(fitReading(fitLabel, fitValue));
         }
-
-        while (infile >> Label >> X_meas >> Y_meas >> Z_meas >> I >> J >> K >> Diameter >> Roundness) {
-            nfile.push_back(Reading(Label, X_meas, Y_meas, Z_meas, I, J, K, Diameter, Roundness));
-        }
-
-        ofile << "****************************************************" << "\n";
-        ofile << "calculating " << plotsFolders[j] << "\n";
-        ofile << "Number of measured points: " << mfile.size() << "\n";
-        ofile << "Number of nominal points: " << nfile.size() << "\n";
-        
-        ofstream outfile;
-        outfile.open(outputDataFolder + measuredFile[j] + outputFile + fileType);
-
-        double theta = -1.69729e-05; 
-        double x_t = 0.00895315 ;   
-        double y_t = 0.0227088;    
-
-        // vector<double> X_corr; vector<double> Y_corr;
-        double x_corr = 0.0; double y_corr = 0.0;
-
-        for (int n = 0; n<mfile.size(); n++){  
-            // calculate the corrections:
-            x_corr = mfile[n].X_meas*cos(theta) - mfile[n].Y_meas*sin(theta) + x_t;
-            y_corr = mfile[n].X_meas*sin(theta) + mfile[n].Y_meas*cos(theta) + y_t;
-
-            // needed for outline:
-            // cout << "x_corr: " << x_corr << "\t" << "y_corr: " << y_corr << endl;
-
-            // calculate the deltas
-            dX = x_corr - nfile[n].X_meas;
-            dX = round(dX*1000)/1000;
-            // ofile << "dx = " << dX << "\n";
-            DX.push_back(dX);
-
-            dY = y_corr - nfile[n].Y_meas;
-            dY = round(dY*1000)/1000;
-            // ofile << "dy = " << dY << "\n";
-            DY.push_back(dY);
-
-            sqrtroot = sqrt(pow(dX,2)+pow(dY,2));
-            sqrtroot = round(sqrtroot*1000)/1000;
-            SQRTROOT.push_back(sqrtroot);
-
-            if (dX > 0){
-                tanTheta = dY/dX;
-                X_plot_end = sqrtroot*1000/sqrt(1+pow(tanTheta,2)) + nfile[n].X_meas;
-                Y_plot_end = tanTheta*(X_plot_end - nfile[n].X_meas) + nfile[n].Y_meas;
-            }
-
-            else if (dX == 0) {
-                X_plot_end = nfile[n].X_meas ;
-                Y_plot_end = y_corr;
-            } 
-
-            else if (dX < 0) {
-                tanTheta = dY/dX;
-                X_plot_end = (-1)*sqrtroot*1000/sqrt(1+pow(tanTheta,2)) + nfile[n].X_meas;
-                Y_plot_end = tanTheta*(X_plot_end - nfile[n].X_meas) + nfile[n].Y_meas;
-            }
-
-            outfile << mfile[n].Label << "," << nfile[n].X_meas << "," << nfile[n].Y_meas << "," << nfile[n].Z_meas   << "," << 
-                       nfile[n].I     << "," << nfile[n].J      << "," << nfile[n].K      << "," << mfile[n].Diameter << "," << mfile[n].Roundness << "," <<
-                       dX             << "," << dY              << "," << sqrtroot        << "," << X_plot_end        << "," << Y_plot_end         << "," << "\n";
-
-
-        }
-        outfile.close();
-        imfile.close();
-        infile.close();
-        
-
-        ofile << "Max DX = " << *max_element(DX.begin(), DX.end()) << "\n";
-        ofile << "Min DX = " << *min_element(DX.begin(), DX.end()) << "\n";
-        ofile << "Max DY = " << *max_element(DY.begin(), DY.end()) << "\n";
-        ofile << "Min DY = " << *min_element(DY.begin(), DY.end()) << "\n";
-
-        ofile << "****************************************************" << "\n";
-        ofile << "\n";
-
     }
-    ofile.close();
-    
-    
+
+    double theta = fitFileValues[0].fitValue;
+    double x_t = fitFileValues[1].fitValue;
+    double y_t = fitFileValues[2].fitValue;
+
+    double x_corr; double y_corr;  
+
+    for (int i = 0; i<type.size(); i++){
+        if (type[i] != "flatness"){
+            cout << type[i] << endl;
+            ofstream ofile(dataToPlotFolder + inputFile + "_" + type[i] + "_postFit" + fileType);
+
+
+            ifstream ifile(dataToPlotFolder + inputFile + "_" + type[i] + fileType );
+            if (! ifile.is_open()) {cout << "Couldn't open input file" << endl;};
+
+
+            vector<Reading> file;
+            string Label;
+            double X_meas;
+            double Y_meas;
+            double Z_meas;
+            double I;
+            double J;
+            double K;
+            double Diameter; 
+            double Roundness; 
+            if (ifile.is_open()) {cout << "input file is open" << endl;};
+
+            if(ifile.is_open()){
+                while(getline(ifile, line)){
+                    row.clear();
+                    stringstream str(line);
+                    while(getline(str, item, ','))
+                        row.push_back(item);
+                        Label = row[0]; X_meas = stod(row[1]);  Y_meas = stod(row[2]);  Z_meas = stod(row[3]);
+                        I = stod(row[4]);   J = stod(row[5]);   K = stod(row[6]);
+                        Diameter = stod(row[7]);    Roundness = stod(row[8]); 
+                        file.push_back(Reading(Label, X_meas,  Y_meas,  Z_meas,  I,  J,  K,  Diameter,  Roundness));
+                }
+            }
+            else
+                cout<<"Could not open the ifile\n";
+            ifile.close();
+         
+            cout << "Number of points measured: " << file.size() << endl; 
+
+
+            for (int j = 0; j<file.size(); j++){
+                x_corr = file[j].X_meas*cos(theta) - file[j].Y_meas*sin(theta) + x_t;
+                y_corr = file[j].X_meas*sin(theta) + file[j].Y_meas*cos(theta) + y_t;
+
+                ofile << file[j].Label << "," << x_corr     << "," << y_corr    << "," << file[j].Z_meas   << "," << 
+                         file[j].I     << "," << file[j].J  << "," << file[j].K << "," << file[j].Diameter << "," << file[j].Roundness << "\n";                       
+
+            }
+
+            ofile.close(); 
+        }
+    }
+            
+    gSystem->Exit(0);
 }
     
 
       
-
-    
-
-  
-   

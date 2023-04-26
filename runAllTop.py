@@ -20,6 +20,9 @@ outputCMM = "CE-H7B-TOP-OUT-03102023_1"
 # What features where measured:
 features = "flatness,outline,6mmPinHole,6p5mmPinHole,10mmPinHole,M3Holes,M6Holes"
 
+# What features to use for doing a fit:
+featuresForFit = "outline"
+
 ############################################################################################
 
 
@@ -44,29 +47,32 @@ features = "flatness,outline,6mmPinHole,6p5mmPinHole,10mmPinHole,M3Holes,M6Holes
 # os.system("root -l 'scripts/cal_plot_curvature.C(\""+ outputCMM + "\",\""+ side +"\",\"flatness\")'")
 
 # Combine the files that will be used for the fit
+# os.system("root -l 'scripts/combineFiles.C(\""+ outputCMM + "\",\""+ featuresForFit +"\")'")
+# os.system("root -l 'scripts/combineFiles.C(\""+ inputCMM + "\",\""+ featuresForFit +"\")'")
 
 # Do the fit and save theta, x_t and y_t in a text file
-os.system("root -l 'scripts/NumericalMinimization.C(\"" + inputCMM + "\",\""+ outputCMM +"\")'")
+# os.system("root -l 'scripts/NumericalMinimization.C(\"" + inputCMM + "\",\""+ outputCMM + "\")'")
 
 # Correct the measurements based on the fit
+# os.system("root -l 'scripts/applyCorr_fit.C(\"" + inputCMM + "\",\""+ features +"\")'")
 
 # Plot outline
-# os.system("root -l 'scripts/cal_plot_outline_holes.C(\""+ inputCMM + "\",\""+ outputCMM + "\",\""+ side +"\",\"outline\",\"1000\")'")
+os.system("root -l 'scripts/cal_plot_outline_holes.C(\""+ inputCMM + "\",\""+ outputCMM + "\",\""+ side +"\",\"outline\",\"1000\")'")
 
 # Plot outline arrow plots
-# os.system("/usr/local/bin/python3 -i scripts/2Dplotter.py " + outputCMM + " outline")
+os.system("/usr/local/bin/python3 -i scripts/2Dplotter.py " + outputCMM + " outline")
 
-# allFeatures = features.split(',')
-# for i in range(len(allFeatures)):
-#     if "Hole" in allFeatures[i]:
-#         # print(allFeatures[i])
+allFeatures = features.split(',')
+for i in range(len(allFeatures)):
+    if "Hole" in allFeatures[i]:
+        # print(allFeatures[i])
 
-#         # Plot the holes
-#         os.system("root -l 'scripts/cal_plot_outline_holes.C(\""+ inputCMM + "\",\""+ outputCMM + "\",\""+ side +"\",\""+ allFeatures[i] +"\",\"1000\")'")
+        # Plot the holes
+        os.system("root -l 'scripts/cal_plot_outline_holes.C(\""+ inputCMM + "\",\""+ outputCMM + "\",\""+ side +"\",\""+ allFeatures[i] +"\",\"1000\")'")
 
-#         # Plot the holes arrow plots
-#         os.system("/usr/local/bin/python3 -i scripts/2Dplotter.py " + outputCMM + " "+allFeatures[i])
-# os._exit(1)
+        # Plot the holes arrow plots
+        os.system("/usr/local/bin/python3 -i scripts/2Dplotter.py " + outputCMM + " "+allFeatures[i])
+os._exit(1)
 
 
 
