@@ -67,6 +67,8 @@ void cal_plot_outline_holes(char const* inputFile_nom, char const* inputFile_mea
     
     string plateSide(side);
     double f = stod(factor);
+    string fit(fitOption);
+    string featureType(feature);
 
     // string dir = "mkdir " + folder;
     // gSystem->Exec(dir.cstr());
@@ -308,6 +310,38 @@ void cal_plot_outline_holes(char const* inputFile_nom, char const* inputFile_mea
 
 
         }
+
+        TCanvas *c1 = new TCanvas("c1","c1",1500,1000);
+        string title = "outline points #sqrt{(#Delta x^{2} + #Delta y^{2})} ";
+        TH1* h1 = new TH1I("", title.c_str(), 100, 0.0, 0.4);
+        for (int i = 0; i < SQRTROOT.size() ; i++){
+            h1->Fill(SQRTROOT[i]);
+        }
+        
+        int binmax = h1->GetMaximumBin();
+        double y_max = h1->GetBinContent(binmax);
+
+        double x_max;
+        x_max = *max_element(SQRTROOT.begin(), SQRTROOT.end());
+
+        h1->GetXaxis()->SetRangeUser(0,x_max*1.1);
+        h1->GetYaxis()->SetRangeUser(0,y_max*1.1);
+
+        h1->SetStats(0);
+        h1->GetXaxis()->SetTitle("sqrt (mm)");
+        h1->SetMarkerSize(0.8);
+
+        h1->Draw("hist, text");
+
+        TBox *b = new TBox(0,0,0.2,y_max*1.1); 
+        b->SetFillColor(851); b->SetFillStyle(3002);
+        b->Draw();
+
+        string saveFile = plotsFolder + inputFile_meas + "_" + feature + "_hist_sqrt_" + fit + ".pdf";  
+        c1->SaveAs(saveFile.c_str());
+        cout << "saved " << saveFile << endl;
+        c1->Close();
+        
         
     }
 
@@ -346,6 +380,75 @@ void cal_plot_outline_holes(char const* inputFile_nom, char const* inputFile_mea
             ofile << file_nom[i].X << "," << file_nom[i].Y << "," << X_plot_end << "," << Y_plot_end << "\n";
 
         }
+
+        // plotting the sqrt
+        TCanvas *c1 = new TCanvas("c1","c1",1500,1000);
+        string title = featureType + " points #sqrt{(#Delta x^{2} + #Delta y^{2})} ";
+        TH1* h1 = new TH1I("", title.c_str(), 100, 0.0, 0.4);
+        for (int i = 0; i < SQRTROOT.size() ; i++){
+            h1->Fill(SQRTROOT[i]);
+        }
+        
+        int binmax = h1->GetMaximumBin();
+        double y_max = h1->GetBinContent(binmax);
+
+        double x_max;
+        x_max = *max_element(SQRTROOT.begin(), SQRTROOT.end());
+        if (x_max < 0.1){x_max = 0.1;};
+
+        h1->GetXaxis()->SetRangeUser(0,x_max*1.1);
+        h1->GetYaxis()->SetRangeUser(0,y_max*1.1);
+
+        h1->SetStats(0);
+        h1->GetXaxis()->SetTitle("sqrt (mm)");
+        h1->SetMarkerSize(0.8);
+
+        h1->Draw("hist, text");
+
+        TBox *b = new TBox(0,0,0.1,y_max*1.1); 
+        b->SetFillColor(851); b->SetFillStyle(3002);
+        b->Draw();
+
+        string saveFile = plotsFolder + inputFile_meas + "_" + feature + "_hist_sqrt_" + fit + ".pdf";  
+        c1->SaveAs(saveFile.c_str());
+        cout << "saved " << saveFile << endl;
+        c1->Close();
+
+        // plotting the hole diameters
+        vector<double> D;
+        TCanvas *c2 = new TCanvas("c2","c2",1500,1000);
+        string title_d = featureType + " diameter";
+        TH1* h2 = new TH1I("", title_d.c_str(), 100, 0.0, 20);
+        for (int i = 0; i < file_meas.size() ; i++){
+            h2->Fill(file_meas[i].Diameter);
+            D.push_back(file_meas[i].Diameter);
+        }
+        
+        int binmax_d = h2->GetMaximumBin();
+        double y_max_d = h2->GetBinContent(binmax_d);
+
+        double x_max_d;
+        x_max_d = *max_element(D.begin(), D.end());
+
+        h2->GetXaxis()->SetRangeUser(0,x_max_d*1.1);
+        h2->GetYaxis()->SetRangeUser(0,y_max_d*1.1);
+
+        h2->SetStats(0);
+        h2->GetXaxis()->SetTitle("Diameter (mm)");
+        h2->SetMarkerSize(0.8);
+
+        h2->Draw("hist, text");
+
+        // TBox *b = new TBox(0,0,0.1,y_max_d*1.1); 
+        // b->SetFillColor(851); b->SetFillStyle(3002);
+        // b->Draw();
+
+        string saveFile_d = plotsFolder + inputFile_meas + "_" + feature + "_diameter" + ".pdf";  
+        c2->SaveAs(saveFile_d.c_str());
+        cout << "saved " << saveFile_d << endl;
+        c2->Close();
+
+        
 
     };
     

@@ -55,7 +55,7 @@ os.system("root -l 'scripts/NumericalMinimization.C(\"" + inputCMM + "\",\""+ ou
 # Correct the measurements based on the fit
 os.system("root -l 'scripts/applyCorr_fit.C(\"" + outputCMM + "\",\""+ features +"\")'")
 
-# Plot outline
+# Plot outline plots
 os.system("root -l 'scripts/cal_plot_outline_holes.C(\""+ inputCMM + "\",\""+ outputCMM + "\",\""+ side +"\",\"outline\",\"1000\",\"preFit\")'")
 os.system("root -l 'scripts/cal_plot_outline_holes.C(\""+ inputCMM + "\",\""+ outputCMM + "\",\""+ side +"\",\"outline\",\"1000\",\"postFit\")'")
 
@@ -69,7 +69,7 @@ for i in range(len(allFeatures)):
     if "Hole" in allFeatures[i]:
         # print(allFeatures[i])
 
-        # Plot the holes
+        # Plot holes plots
         os.system("root -l 'scripts/cal_plot_outline_holes.C(\""+ inputCMM + "\",\""+ outputCMM + "\",\""+ side +"\",\""+ allFeatures[i] +"\",\"1000\",\"preFit\")'")
         os.system("root -l 'scripts/cal_plot_outline_holes.C(\""+ inputCMM + "\",\""+ outputCMM + "\",\""+ side +"\",\""+ allFeatures[i] +"\",\"1000\",\"postFit\")'")
 

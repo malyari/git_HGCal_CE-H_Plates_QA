@@ -1,3 +1,7 @@
+// Author: Maral Alyari
+// Institution: Fermilab
+// Correcting the measurement points based on the fit results
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
