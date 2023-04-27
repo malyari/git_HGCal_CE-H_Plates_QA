@@ -15,7 +15,7 @@ thickness = "6.35"
 
 # File names:
 inputCMM = "CE-H_7B_TOP_IN"
-outputCMM = "CE-H_7B_TOP_OUT_03102023_1"
+outputCMM = "CE-H_7B_TOP_OUT_03102023_2"
 
 # What features where measured:
 features = "flatness,outline,6mmPinHole,6p5mmPinHole,10mmPinHole,M3Holes,M6Holes"
