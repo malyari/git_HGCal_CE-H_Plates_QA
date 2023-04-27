@@ -94,27 +94,46 @@ void plot_flatness(char const* inputFile, char const* side, char const* feature,
     ifile.close();
 
     ////////// plot the z values
-    vector<double> Z_values;
     TCanvas *c1 = new TCanvas("c1","c1",1500,1000);
     string title = "Z " + plateSide + " surface (mm)";
     TH2F *plot_z = new TH2F("", title.c_str(),  
-                        34,0,1700,    // X axis
-                        40,-1000,1000); // Y axis
+                        48,0,2400,    // X axis
+                        56,-1400,1400); // Y axis
 
-    if (strcmp(side, "bottom")) {
-        // cout << "hi  top" << endl;
-        plot_z->GetYaxis()->SetRangeUser(0,1000);
-    }
-    if (strcmp(side, "top")){
-        // cout << "hi   bottom" << endl;
-        plot_z->GetYaxis()->SetRangeUser(-1000,0);   
-    }
-    
 
+    vector<double> X_values; vector<double> Y_values; vector<double> Z_values; 
     for (int i = 0; i<file.size(); i++){
         plot_z->Fill(file[i].Y_meas, file[i].X_meas, file[i].Z_meas - thickness);
+        X_values.push_back(file[i].X_meas);
+        Y_values.push_back(file[i].Y_meas);
         Z_values.push_back(file[i].Z_meas - thickness);
     }
+
+    double x_max; double x_min; double y_max; double y_min; double z_max; double z_min;
+    x_max = *max_element(X_values.begin(), X_values.end());
+    x_min = *min_element(X_values.begin(), X_values.end());
+    y_max = *max_element(Y_values.begin(), Y_values.end());
+    y_min = *min_element(Y_values.begin(), Y_values.end());
+    z_max = *max_element(Z_values.begin(), Z_values.end());
+    z_min = *min_element(Z_values.begin(), Z_values.end());
+
+    // cout << "x_max: " << round(x_max/50)*50;
+    // cout << "y_max: " << round(y_max/50)*50;
+    cout << "z_max: " << z_max << endl; 
+
+    double x_axis_max; double y_axis_max;
+    x_axis_max = (round(y_max/50)*50*1.05);
+    if (strcmp(side, "top") == 0) {
+        // cout << "hi  top" << endl;
+        y_axis_max = (round(x_max/50)*50);
+        plot_z->GetYaxis()->SetRangeUser(0,y_axis_max);
+    }
+    if (strcmp(side, "bottom") == 0){
+        // cout << "hi   bottom" << endl;
+        y_axis_max = (round(x_min/50)*50);
+        plot_z->GetYaxis()->SetRangeUser(y_axis_max,0);   
+    }
+    plot_z->GetXaxis()->SetRangeUser(0,x_axis_max);
     
     gStyle->SetPalette(kBird);
     plot_z->SetStats(0);
@@ -122,13 +141,6 @@ void plot_flatness(char const* inputFile, char const* side, char const* feature,
     plot_z->GetYaxis()->SetTitle("X (mm)");
     plot_z->SetMarkerSize(0.8);
     plot_z->Draw("COLZ, text");
-
-    double z_min; double z_max;
-    for (double i: Z_values){
-        if (i < z_min) {z_min = i;}
-        if (i > z_max) {z_max = i;}
-    }
-
 
     stringstream z_max_stream;  z_max_stream << fixed << setprecision(3) << z_max;
     string z_max_s = z_max_stream.str();
@@ -140,8 +152,8 @@ void plot_flatness(char const* inputFile, char const* side, char const* feature,
     string min = "Min = " + z_min_s + " (mm)"; 
 
     TText *tmax = new TText(1400,900,max.c_str());
-    if (strcmp(side, "top")) {tmax->SetX(1400); tmax->SetY(-820);}
-    tmax->SetTextAlign(22);
+    if (strcmp(side, "bottom") == 0 ) {tmax->SetX(x_axis_max - 200); tmax->SetY(-820);}
+    tmax->SetTextAlign(31);
     tmax->SetTextColor(kBlack);
     tmax->SetTextFont(42);
     tmax->SetTextSize(0.05);
@@ -149,8 +161,8 @@ void plot_flatness(char const* inputFile, char const* side, char const* feature,
     tmax->Draw();
 
     TText *tmin = new TText(1400,820,min.c_str());
-    if (strcmp(side, "top")) {tmin->SetX(1400); tmin->SetY(-900);}
-    tmin->SetTextAlign(22);
+    if (strcmp(side, "bottom") == 0 ) {tmin->SetX(x_axis_max - 200); tmin->SetY(-900);}
+    tmin->SetTextAlign(31);
     tmin->SetTextColor(kBlack);
     tmin->SetTextFont(42);
     tmin->SetTextSize(0.05);
@@ -161,7 +173,7 @@ void plot_flatness(char const* inputFile, char const* side, char const* feature,
     string thickness_s = thickness_stream.str();
     string note = "Z_plotted = Z_measured - " + thickness_s;
     TText *tnote = new TText(320,-80,note.c_str());
-    if (strcmp(side, "top")) {tnote->SetX(320); tnote->SetY(-1080);}
+    if (strcmp(side, "bottom")==0) {tnote->SetX(320); tnote->SetY(-1000);}
     tnote->SetTextAlign(22);
     tnote->SetTextColor(kBlack);
     tnote->SetTextFont(42);

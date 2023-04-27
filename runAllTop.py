@@ -38,7 +38,6 @@ os.system("/usr/local/bin/python3 -i scripts/sort_flatness.py " + outputCMM + " 
 
 # Check granite table flatness
 
-
 # Plot flatness:
 os.system("root -l 'scripts/plot_flatness.C(\""+ outputCMM + "\",\""+ side +"\",\"flatness\",\""+ thickness +"\")'")
 
