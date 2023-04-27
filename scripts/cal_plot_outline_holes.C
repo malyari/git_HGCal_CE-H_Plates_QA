@@ -323,6 +323,7 @@ void cal_plot_outline_holes(char const* inputFile_nom, char const* inputFile_mea
 
         double x_max;
         x_max = *max_element(SQRTROOT.begin(), SQRTROOT.end());
+        if (x_max < 0.2){x_max = 0.2;};
 
         h1->GetXaxis()->SetRangeUser(0,x_max*1.1);
         h1->GetYaxis()->SetRangeUser(0,y_max*1.1);
