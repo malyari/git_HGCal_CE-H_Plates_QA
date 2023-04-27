@@ -14,8 +14,8 @@ side = "top"
 thickness = "6.35"
 
 # File names:
-inputCMM = "allTop_7B_config1_sorted"
-outputCMM = "CE-H7B-TOP-OUT-03102023_1"
+inputCMM = "CE-H_7B_TOP_IN"
+outputCMM = "CE-H_7B_TOP_OUT_03102023_1"
 
 # What features where measured:
 features = "flatness,outline,6mmPinHole,6p5mmPinHole,10mmPinHole,M3Holes,M6Holes"

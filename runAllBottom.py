@@ -13,8 +13,8 @@ side = "bottom"
 thickness = "6.35"
 
 # File names:
-inputCMM = "allBottom_7B_config1_sorted"
-outputCMM = "CE-H7B-BOTTOM-OUT-03152023_1";
+inputCMM = "CE-H_7B_BOTTOM_IN"
+outputCMM = "CE-H_7B_BOTTOM_OUT_03152023_1";
 
 # What features where measured:
 features = "flatness"

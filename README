@@ -30,3 +30,6 @@ General information:
 
 - runAllBottom.py: Runs all the scripts to analyze the bottom surface data.
 
+
+Data columns:
+Label 	X 	Y 	Z 	I 	J 	K 	Diameter 	Roundness
