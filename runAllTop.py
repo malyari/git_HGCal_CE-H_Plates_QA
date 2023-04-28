@@ -14,11 +14,11 @@ side = "top"
 thickness = "6.35"
 
 # File names:
-inputCMM = "CE-H_7B_TOP_IN"
-outputCMM = "CE-H_7B_TOP_OUT_03102023_2"
+inputCMM = "CE-H_7A_TOP_IN"
+outputCMM = "CE-H_7A_TOP_OUT_04042023_1"
 
 # What features where measured:
-features = "flatness,outline,6mmPinHole,6p5mmPinHole,10mmPinHole,M3Holes,M6Holes"
+features = "flatness,outline,6mmPinHole,6p5mmPinHole,10mmPinHole,M3Hole,M6Hole"
 
 # What features to use for doing a fit:
 featuresForFit = "outline"
@@ -32,49 +32,49 @@ os.system("root -l 'scripts/separateFile.C(\"" + inputCMM + "\",\""+ features +"
 # Separating the file with CMM measured values:
 os.system("root -l 'scripts/separateFile.C(\""+ outputCMM + "\",\""+ features +"\")'")
 
-# Sort flatness measurements for calculating the curvature. 
-os.system("/usr/local/bin/python3 -i scripts/sort_flatness.py " + outputCMM + " flatness x")
-os.system("/usr/local/bin/python3 -i scripts/sort_flatness.py " + outputCMM + " flatness y")
+# # Sort flatness measurements for calculating the curvature. 
+# os.system("/usr/local/bin/python3 -i scripts/sort_flatness.py " + outputCMM + " flatness x")
+# os.system("/usr/local/bin/python3 -i scripts/sort_flatness.py " + outputCMM + " flatness y")
 
-# Check granite table flatness
+# # Check granite table flatness
 
-# Plot flatness:
-os.system("root -l 'scripts/plot_flatness.C(\""+ outputCMM + "\",\""+ side +"\",\"flatness\",\""+ thickness +"\")'")
+# # Plot flatness:
+# os.system("root -l 'scripts/plot_flatness.C(\""+ outputCMM + "\",\""+ side +"\",\"flatness\",\""+ thickness +"\")'")
 
-# Calculate and plot the curvature:
-os.system("root -l 'scripts/cal_plot_curvature.C(\""+ outputCMM + "\",\""+ side +"\",\"flatness\")'")
+# # Calculate and plot the curvature:
+# os.system("root -l 'scripts/cal_plot_curvature.C(\""+ outputCMM + "\",\""+ side +"\",\"flatness\")'")
 
-# Combine the files that will be used for the fit
-os.system("root -l 'scripts/combineFiles.C(\""+ outputCMM + "\",\""+ featuresForFit +"\")'")
-os.system("root -l 'scripts/combineFiles.C(\""+ inputCMM + "\",\""+ featuresForFit +"\")'")
+# # Combine the files that will be used for the fit
+# os.system("root -l 'scripts/combineFiles.C(\""+ outputCMM + "\",\""+ featuresForFit +"\")'")
+# os.system("root -l 'scripts/combineFiles.C(\""+ inputCMM + "\",\""+ featuresForFit +"\")'")
 
-# Do the fit and save theta, x_t and y_t in a text file
-os.system("root -l 'scripts/NumericalMinimization.C(\"" + inputCMM + "\",\""+ outputCMM + "\")'")
+# # Do the fit and save theta, x_t and y_t in a text file
+# os.system("root -l 'scripts/NumericalMinimization.C(\"" + inputCMM + "\",\""+ outputCMM + "\")'")
 
-# Correct the measurements based on the fit
-os.system("root -l 'scripts/applyCorr_fit.C(\"" + outputCMM + "\",\""+ features +"\")'")
+# # Correct the measurements based on the fit
+# os.system("root -l 'scripts/applyCorr_fit.C(\"" + outputCMM + "\",\""+ features +"\")'")
 
-# Plot outline plots
-os.system("root -l 'scripts/cal_plot_outline_holes.C(\""+ inputCMM + "\",\""+ outputCMM + "\",\""+ side +"\",\"outline\",\"1000\",\"preFit\")'")
-os.system("root -l 'scripts/cal_plot_outline_holes.C(\""+ inputCMM + "\",\""+ outputCMM + "\",\""+ side +"\",\"outline\",\"1000\",\"postFit\")'")
+# # Plot outline plots
+# os.system("root -l 'scripts/cal_plot_outline_holes.C(\""+ inputCMM + "\",\""+ outputCMM + "\",\""+ side +"\",\"outline\",\"1000\",\"preFit\")'")
+# os.system("root -l 'scripts/cal_plot_outline_holes.C(\""+ inputCMM + "\",\""+ outputCMM + "\",\""+ side +"\",\"outline\",\"1000\",\"postFit\")'")
 
-# Plot outline arrow plots
-os.system("/usr/local/bin/python3 -i scripts/2Dplotter.py " + outputCMM + " outline" + " preFit")
-os.system("/usr/local/bin/python3 -i scripts/2Dplotter.py " + outputCMM + " outline" + " postFit")
+# # Plot outline arrow plots
+# os.system("/usr/local/bin/python3 -i scripts/2Dplotter.py " + outputCMM + " outline" + " preFit")
+# os.system("/usr/local/bin/python3 -i scripts/2Dplotter.py " + outputCMM + " outline" + " postFit")
 
 
-allFeatures = features.split(',')
-for i in range(len(allFeatures)):
-    if "Hole" in allFeatures[i]:
-        # print(allFeatures[i])
+# allFeatures = features.split(',')
+# for i in range(len(allFeatures)):
+#     if "Hole" in allFeatures[i]:
+#         # print(allFeatures[i])
 
-        # Plot holes plots
-        os.system("root -l 'scripts/cal_plot_outline_holes.C(\""+ inputCMM + "\",\""+ outputCMM + "\",\""+ side +"\",\""+ allFeatures[i] +"\",\"1000\",\"preFit\")'")
-        os.system("root -l 'scripts/cal_plot_outline_holes.C(\""+ inputCMM + "\",\""+ outputCMM + "\",\""+ side +"\",\""+ allFeatures[i] +"\",\"1000\",\"postFit\")'")
+#         # Plot holes plots
+#         os.system("root -l 'scripts/cal_plot_outline_holes.C(\""+ inputCMM + "\",\""+ outputCMM + "\",\""+ side +"\",\""+ allFeatures[i] +"\",\"1000\",\"preFit\")'")
+#         os.system("root -l 'scripts/cal_plot_outline_holes.C(\""+ inputCMM + "\",\""+ outputCMM + "\",\""+ side +"\",\""+ allFeatures[i] +"\",\"1000\",\"postFit\")'")
 
-        # Plot the holes arrow plots
-        os.system("/usr/local/bin/python3 -i scripts/2Dplotter.py " + outputCMM + " "+allFeatures[i] + " preFit")
-        os.system("/usr/local/bin/python3 -i scripts/2Dplotter.py " + outputCMM + " "+allFeatures[i] + " postFit")
+#         # Plot the holes arrow plots
+#         os.system("/usr/local/bin/python3 -i scripts/2Dplotter.py " + outputCMM + " "+allFeatures[i] + " preFit")
+#         os.system("/usr/local/bin/python3 -i scripts/2Dplotter.py " + outputCMM + " "+allFeatures[i] + " postFit")
 
 os._exit(1)
 

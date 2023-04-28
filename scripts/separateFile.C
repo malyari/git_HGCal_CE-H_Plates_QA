@@ -56,6 +56,7 @@ void separateFile(char const* inputFile, char const* features){
     string feature;
 
     // cout << features << endl;
+    string toSearch = features;
     stringstream str_feat(features);
     while(getline(str_feat, feature, ','))
         type.push_back(feature);
@@ -104,6 +105,7 @@ void separateFile(char const* inputFile, char const* features){
     string num;
     for (int i = 0; i<type.size(); i++){
         ofstream ofile(dataToPlotFolder + inputFile + "_" + type[i] + fileType);
+        ofstream ofile_else(dataToPlotFolder + inputFile + "_else" + fileType);
         for (int j = 1; j<file.size(); j++){
             if ( file[j].Label.substr(0, type[i].size()) == type[i] ){
 
@@ -114,10 +116,19 @@ void separateFile(char const* inputFile, char const* features){
                 // cout  << setprecision(10) << "file[j].I: "  << file[j].I << endl;
                 ofile << file[j].Label << "," << file[j].X_meas << "," << file[j].Y_meas << "," << file[j].Z_meas << "," << 
                          file[j].I     << "," << file[j].J      << "," << file[j].K      << "," << file[j].Diameter << "," << file[j].Roundness << "\n";                
-            };      
+            }; 
+            bool notFound = toSearch.find(file[j].Label.substr(0, type[i].size())) == string::npos;
+            if (notFound){
+                ofile_else << file[j].Label << "," << file[j].X_meas << "," << file[j].Y_meas << "," << file[j].Z_meas << "," << 
+                         file[j].I     << "," << file[j].J      << "," << file[j].K      << "," << file[j].Diameter << "," << file[j].Roundness << "\n";                
+            }     
         };  
         ofile.close();
     };
+
+
+
+
     gSystem->Exit(0);
 }
     
