@@ -105,8 +105,8 @@ void separateFile(char const* inputFile, char const* features){
     string num;
     for (int i = 0; i<type.size(); i++){
         ofstream ofile(dataToPlotFolder + inputFile + "_" + type[i] + fileType);
-        ofstream ofile_else(dataToPlotFolder + inputFile + "_else" + fileType);
-        for (int j = 1; j<file.size(); j++){
+        ofstream ofile_controlPoints(dataToPlotFolder + inputFile + "_controlPoints" + fileType);
+        for (int j = 0; j<file.size(); j++){
             if ( file[j].Label.substr(0, type[i].size()) == type[i] ){
 
                 size_t pos = file[j].Label.find(type[i]); 
@@ -119,11 +119,12 @@ void separateFile(char const* inputFile, char const* features){
             }; 
             bool notFound = toSearch.find(file[j].Label.substr(0, type[i].size())) == string::npos;
             if (notFound){
-                ofile_else << file[j].Label << "," << file[j].X_meas << "," << file[j].Y_meas << "," << file[j].Z_meas << "," << 
+                ofile_controlPoints << file[j].Label << "," << file[j].X_meas << "," << file[j].Y_meas << "," << file[j].Z_meas << "," << 
                          file[j].I     << "," << file[j].J      << "," << file[j].K      << "," << file[j].Diameter << "," << file[j].Roundness << "\n";                
             }     
         };  
         ofile.close();
+        ofile_controlPoints.close();
     };
 
 
