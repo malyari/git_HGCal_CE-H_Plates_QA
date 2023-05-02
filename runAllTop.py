@@ -16,7 +16,7 @@ thickness = "6.35"
 
 # File names:
 inputCMM = "CE-H_7A_TOP_CSYS1_IN"
-outputCMM = "CE-H_7A_TOP_CSYS1_OUT_04042023_1"
+outputCMM = "CE-H_7A_TOP_CSYS1_OUT_04042023_2"
 
 # What features where measured:
 features = "flatness,outline,6mmPinHole,6p5mmPinHole,10mmPinHole,M3Hole,M6Hole"
@@ -38,7 +38,7 @@ os.system("root -l 'scripts/separateFile.C(\""+ outputCMM + "\",\""+ features +"
 os.system("/usr/local/bin/python3 -i scripts/sort_flatness.py " + outputCMM + " flatness x")
 os.system("/usr/local/bin/python3 -i scripts/sort_flatness.py " + outputCMM + " flatness y")
 
-# Check granite table flatness
+# # Check granite table flatness
 
 # Plot flatness:
 os.system("root -l 'scripts/plot_flatness.C(\""+ outputCMM + "\",\""+ csys +"\",\""+ side +"\",\"flatness\",\""+ thickness +"\")'")

@@ -15,7 +15,7 @@ thickness = "6.35"
 
 # File names:
 inputCMM = "CE-H_7A_BOTTOM_CSYS2_IN"
-outputCMM = "CE-H_7A_BOTTOM_CSYS2_OUT_04102023_1";
+outputCMM = "CE-H_7A_BOTTOM_CSYS2_OUT_04102023_2";
 
 # What features where measured:
 features = "flatness"
