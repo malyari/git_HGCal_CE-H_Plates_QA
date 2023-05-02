@@ -46,7 +46,17 @@ struct Reading {
 
 };
 
-void combineFiles(char const* inputFile, char const* featuresForFit){ 
+struct Reading2 {
+    double X_nom;
+    double Y_nom;
+    double X_plot_end;
+    double Y_plot_end;
+    Reading2(double x_nom, double y_nom, double x_plot_end, double y_plot_end) :
+            X_nom(x_nom), Y_nom(y_nom), X_plot_end(x_plot_end), Y_plot_end(y_plot_end) {}
+
+};
+
+void combineFiles(char const* inputFile, char const* featuresToCombine, char const* useOption, char const* fitOption){ 
     ////////// read the input file
     string dataToPlotFolder = "/Users/maral87-local/Desktop/Maral/Projects/Workflow-Presentations/HGCal/Daily/git_HGCal_CE-H_Plates_QA/data/dataToPlot/";
     string fileType = ".csv";
@@ -54,14 +64,55 @@ void combineFiles(char const* inputFile, char const* featuresForFit){
     vector<string> type;
     string feature;
 
+    string fit(fitOption);
+    string use(useOption);
+
     // cout << features << endl;
-    stringstream str_feat(featuresForFit);
+    stringstream str_feat(featuresToCombine);
     while(getline(str_feat, feature, ','))
         type.push_back(feature);
 
-    ofstream ofile(dataToPlotFolder + inputFile + "_forFit" + fileType);
+    ofstream ofile(dataToPlotFolder + inputFile + "_" + use + "_" + fit + fileType);
 
-    for (int i = 0; i<type.size(); i++){
+    if (strcmp(use.c_str(), "holes_arrow") == 0){
+        for (int i = 0; i<type.size(); i++){
+        cout << type[i] << endl;
+
+        ifstream ifile(dataToPlotFolder + inputFile + "_" + type[i] + "_arrow_" + fit +fileType );
+        if (! ifile.is_open()) {cout << "Couldn't open input file" << endl;};
+
+        vector<Reading2> file;
+        double X_nom; double Y_nom;
+        double X_plot_end; double Y_plot_end;
+
+        vector<string> row;
+        string line, item;
+     
+        if(ifile.is_open()){
+            while(getline(ifile, line)){
+                row.clear();
+                stringstream str(line);
+                while(getline(str, item, ','))
+                    row.push_back(item);
+                    X_nom = stod(row[0]); Y_nom = stod(row[1]);  X_plot_end = stod(row[2]);  Y_plot_end = stod(row[3]);
+                    file.push_back(Reading2(X_nom, Y_nom, X_plot_end, Y_plot_end));
+            }
+        }
+        else
+            cout<<"Could not open the ifile\n";
+        ifile.close();
+     
+        cout << "Number of points measured: " << file.size() << endl; 
+
+        for (int j = 0; j<file.size(); j++){
+            ofile << file[j].X_nom << "," << file[j].Y_nom << "," << file[j].X_plot_end << "," << file[j].Y_plot_end << "\n";                       
+            };  
+        }
+    }
+
+
+    if (strcmp(use.c_str(), "holes_arrow") != 0){
+        for (int i = 0; i<type.size(); i++){
         cout << type[i] << endl;
 
         ifstream ifile(dataToPlotFolder + inputFile + "_" + type[i] + fileType );
@@ -104,10 +155,11 @@ void combineFiles(char const* inputFile, char const* featuresForFit){
         for (int j = 0; j<file.size(); j++){
             ofile << file[j].Label << "," << file[j].X_meas << "," << file[j].Y_meas << "," << file[j].Z_meas << "," << 
                      file[j].I     << "," << file[j].J      << "," << file[j].K      << "," << file[j].Diameter << "," << file[j].Roundness << "\n";                       
-        };  
-
+            };  
+        }
     }
-
+  
+    
     ofile.close(); 
     gSystem->Exit(0);
 }

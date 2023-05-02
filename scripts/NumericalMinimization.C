@@ -57,10 +57,10 @@ double Distance(char const* inputFile_nom, char const* inputFile_meas, const dou
     string fileType = ".csv";
 
 
-    ifstream imfile(dataToPlotFolder + inputFile_meas + "_forFit" +  fileType );
+    ifstream imfile(dataToPlotFolder + inputFile_meas + "_forFit_preFit" +  fileType );
     if (! imfile.is_open()) {cout << "Couldn't open input file" << endl;};
 
-    ifstream infile(dataToPlotFolder + inputFile_nom + "_forFit" + fileType);
+    ifstream infile(dataToPlotFolder + inputFile_nom + "_forFit_preFit" + fileType);
     if (! infile.is_open()) {cout << "Couldn't open input file" << endl;};
 
     vector<Reading> nfile;

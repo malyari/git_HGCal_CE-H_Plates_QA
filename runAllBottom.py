@@ -8,13 +8,14 @@ import os
 ################### Need to make adjustments here for every measurement ###################
 # What side of the plate was measured:
 side = "bottom"
+csys = "csys2"
 
 # Thickness of the measured plate:
 thickness = "6.35"
 
 # File names:
-inputCMM = "CE-H_7B_BOTTOM_IN"
-outputCMM = "CE-H_7B_BOTTOM_OUT_03152023_2";
+inputCMM = "CE-H_7A_BOTTOM_CSYS2_IN"
+outputCMM = "CE-H_7A_BOTTOM_CSYS2_OUT_04102023_1";
 
 # What features where measured:
 features = "flatness"
@@ -35,10 +36,10 @@ os.system("/usr/local/bin/python3 -i scripts/sort_flatness.py " + outputCMM + " 
 # check granite table points
 
 # Plot flatness:
-os.system("root -l 'scripts/plot_flatness.C(\""+ outputCMM + "\",\""+ side +"\",\"flatness\",\""+ thickness +"\")'")
+os.system("root -l 'scripts/plot_flatness.C(\""+ outputCMM + "\",\""+ csys +"\",\""+ side +"\",\"flatness\",\""+ thickness +"\")'")
 
 # Calculate and plot the curvature:
-os.system("root -l 'scripts/cal_plot_curvature.C(\""+ outputCMM + "\",\""+ side +"\",\"flatness\")'")
+os.system("root -l 'scripts/cal_plot_curvature.C(\""+ outputCMM + "\",\""+ csys +"\",\""+ side +"\",\"flatness\")'")
 
 
 

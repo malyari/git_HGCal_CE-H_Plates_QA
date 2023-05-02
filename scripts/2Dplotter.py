@@ -52,7 +52,10 @@ for i in range(len(X_nom)):
   plt.arrow(x=X_nom_plot, y=Y_nom_plot, dx=deltaX_plot, dy=deltaY_plot,  head_width=8, color='b')  #0.08 8 width=.01,
   plt.xlabel('X_nom (mm)', horizontalalignment='right', x=1.0)
   plt.ylabel('Y_nom (mm)', horizontalalignment='right', y=1.0)
-  plt.title(feature + " points displacement \n arrow unit: $\mu$m")
+  if "hole" in feature:
+    plt.title(feature + " central points displacement \n arrow unit: $\mu$m")
+  else:
+    plt.title(feature + " points displacement \n arrow unit: $\mu$m")
   # plt.text(10, -10,'arrow unit: um', verticalalignment='bottom', horizontalalignment='left')
   # plt.text(0.1, 0.9, 'arrow unit: um')
   # head_width=0.02, head_length=0.02, linewidth=4, color='g'

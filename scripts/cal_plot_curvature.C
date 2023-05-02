@@ -48,7 +48,7 @@ struct Reading {
 
 };
 
-void cal_plot_curvature(char const* inputFile, char const* side, char const* feature){
+void cal_plot_curvature(char const* inputFile, char const* csys, char const* side, char const* feature){
     ////////// read the input file
     string dataToPlotFolder = "/Users/maral87-local/Desktop/Maral/Projects/Workflow-Presentations/HGCal/Daily/git_HGCal_CE-H_Plates_QA/data/dataToPlot/";
     string plotsFolder =      "/Users/maral87-local/Desktop/Maral/Projects/Workflow-Presentations/HGCal/Daily/git_HGCal_CE-H_Plates_QA/plots/";
@@ -59,6 +59,7 @@ void cal_plot_curvature(char const* inputFile, char const* side, char const* fea
     string fileType = ".csv";
 
     string plateSide(side);
+    string plateCSYS(csys);
 
     // string dir = "mkdir " + folder;
     // gSystem->Exec(dir.c_str());
@@ -143,7 +144,7 @@ void cal_plot_curvature(char const* inputFile, char const* side, char const* fea
         
 
         for (int i = 0; i<Curvature.size(); i++){
-            plot_z->Fill(Y_values[i], X_values[i], Curvature[i]);
+            plot_z->Fill(X_values[i], Y_values[i], Curvature[i]);
         }
 
         double x_max; double x_min; double y_max; double y_min; double c_max; double c_min;
@@ -158,15 +159,15 @@ void cal_plot_curvature(char const* inputFile, char const* side, char const* fea
         cout << "y_max: " << round(y_max/50)*50;
 
         double x_axis_max; double y_axis_max;
-        x_axis_max = (round(y_max/50)*50*1.05);
-        if (strcmp(side, "top") == 0) {
+        x_axis_max = (round(x_max/50)*50*1.05);
+        if (strcmp(csys, "csys1") == 0) {
             // cout << "hi  top" << endl;
-            y_axis_max = (round(x_max/50)*50);
+            y_axis_max = (round(y_max/50)*50);
             plot_z->GetYaxis()->SetRangeUser(0,y_axis_max);
         }
-        if (strcmp(side, "bottom") == 0){
+        if (strcmp(csys, "csys2") == 0){
             // cout << "hi   bottom" << endl;
-            y_axis_max = (round(x_min/50)*50);
+            y_axis_max = (round(y_min/50)*50);
             plot_z->GetYaxis()->SetRangeUser(y_axis_max,0);   
         }
         plot_z->GetXaxis()->SetRangeUser(0,x_axis_max);
@@ -189,8 +190,8 @@ void cal_plot_curvature(char const* inputFile, char const* side, char const* fea
         string max = "Max = " + c_max_s + " e-6 mm-1"; 
         string min = "Min = " + c_min_s + " e-6 mm-1"; 
 
-        TText *tmax = new TText(1400,800,max.c_str());
-        if (strcmp(side, "bottom") == 0 ) {tmax->SetX(x_axis_max - 200); tmax->SetY(-720);}
+        TText *tmax = new TText(x_axis_max - 50,y_axis_max - 100,max.c_str());
+        if (strcmp(csys, "csys2") == 0 ) {tmax->SetX(x_axis_max - 50); tmax->SetY(y_axis_max + 160);}
         tmax->SetTextAlign(31);
         tmax->SetTextColor(kBlack);
         tmax->SetTextFont(42);
@@ -198,8 +199,8 @@ void cal_plot_curvature(char const* inputFile, char const* side, char const* fea
         tmax->SetTextAngle(0);
         tmax->Draw();
 
-        TText *tmin = new TText(1400,720,min.c_str());
-        if (strcmp(side, "bottom") == 0 ) {tmin->SetX(x_axis_max - 200); tmin->SetY(-800);}
+        TText *tmin = new TText(x_axis_max - 50,y_axis_max - 160,min.c_str());
+        if (strcmp(csys, "csys2") == 0 ) {tmin->SetX(x_axis_max - 50); tmin->SetY(y_axis_max + 100);}
         tmin->SetTextAlign(31);
         tmin->SetTextColor(kBlack);
         tmin->SetTextFont(42);
@@ -209,13 +210,14 @@ void cal_plot_curvature(char const* inputFile, char const* side, char const* fea
 
         string note = "Acceptable curvature = = +/-20 e-6 mm-1" ;
         TText *tnote = new TText(320,-80,note.c_str());
-        if (strcmp(side, "bottom") == 0 ) {tnote->SetX(320); tnote->SetY(y_axis_max-60);}
+        if (strcmp(csys, "csys2") == 0 ) {tnote->SetX(320); tnote->SetY(y_axis_max-80);}
         tnote->SetTextAlign(22);
         tnote->SetTextColor(kBlack);
         tnote->SetTextFont(42);
         tnote->SetTextSize(0.04);
         tnote->SetTextAngle(0);
         tnote->Draw();
+
 
         string saveFile = plotsFolder + inputFile + "_curvature" + "_" + direction[nFile] + ".pdf";
         c1->SaveAs(saveFile.c_str());
@@ -225,7 +227,7 @@ void cal_plot_curvature(char const* inputFile, char const* side, char const* fea
         ////////// plot the curvature histogram 
         TCanvas *c2 = new TCanvas("c2","c2",1500,1000);
         string title2 = plateSide + " surface curvature in " + direction[nFile] + " #sqrt{(#Delta x^{2} + #Delta y^{2})} ";
-        TH1* h1 = new TH1I("", title2.c_str(), 100, -60, 60);
+        TH1* h1 = new TH1I("", title2.c_str(), 100, -500, 500);
         for (int i = 0; i < Curvature.size() ; i++){
             h1->Fill(Curvature[i]);
         }
@@ -235,6 +237,16 @@ void cal_plot_curvature(char const* inputFile, char const* side, char const* fea
 
         // h1->GetXaxis()->SetRangeUser(0,x_max*1.1);
         h1->GetYaxis()->SetRangeUser(0,hist_max*1.1);
+        h1->GetXaxis()->SetRangeUser(-60,60);
+        if (c_max > 60){
+            h1->GetXaxis()->SetRangeUser(-60,c_max*1.1);
+        }
+        if (c_min < -60){
+            h1->GetXaxis()->SetRangeUser(c_min*1.1,60);
+        }
+        if (c_min < -60 and c_max > 60){
+            h1->GetXaxis()->SetRangeUser(c_min*1.1,c_max*1.1);
+        }
 
         h1->Draw("hist, text");
 
@@ -242,8 +254,8 @@ void cal_plot_curvature(char const* inputFile, char const* side, char const* fea
         b->SetFillColor(851); b->SetFillStyle(3002);
         b->Draw();
 
-        TText *tnote2 = new TText(-35,-2,note.c_str());
-        if (strcmp(side, "bottom") == 0 ) {tnote2->SetX(-35); tnote2->SetY(-2);}
+        TText *tnote2 = new TText(0,-12,note.c_str());
+        // if (strcmp(side, "bottom") == 0 ) {tnote2->SetX(-35); tnote2->SetY(-5);}
         tnote2->SetTextAlign(22);
         tnote2->SetTextColor(kBlack);
         tnote2->SetTextFont(42);
