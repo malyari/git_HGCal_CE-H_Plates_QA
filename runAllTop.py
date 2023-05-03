@@ -84,7 +84,7 @@ for i in range(len(allFeatures)):
 
 # To get one arrow plot for all the holes:
 holesArrowPlot = ",".join(holesArrowPlot)
-# Combine the ghole files that will be plotted together
+# Combine the hole files that will be plotted together
 os.system("root -l 'scripts/combineFiles.C(\""+ outputCMM + "\",\""+ holesArrowPlot +"\",\"holes_arrow\",\"preFit\")'")
 os.system("root -l 'scripts/combineFiles.C(\""+ outputCMM + "\",\""+ holesArrowPlot +"\",\"holes_arrow\",\"postFit\")'")
 # Plot the holes arrow plots
