@@ -26,6 +26,8 @@ General information:
 
 - applyCorr_fit.C: Corrects the measurement points based on the fit results.
 
+- controlMeasurements.py: Summarizes the control points measurements.
+
 - runAllTop.py: Runs all the scripts to analyze the top surface data.
 
 - runAllBottom.py: Runs all the scripts to analyze the bottom surface data.
